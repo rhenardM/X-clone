@@ -57,10 +57,11 @@
       @include('pages/partials/sidebar_left')
   
       <!-- Contenu principal -->
-      <section class="flex-1 bg-black p-6 text-white">
-        <h1 class="text-2xl font-bold mb-4">Fil d'actualités</h1>
-        <!-- Ajoutez ici le contenu principal, comme les tweets -->
-        <p>Contenu principal statique pour l'instant.</p>
+      {{-- <div class="flex-1 bg-black p-6">
+      </div> --}}
+      <section class="flex-1 ml-64 mr-64 bg-black overflow-y-auto h-screen">
+        @include('pages/layouts/tweet_form')
+        @include('pages/layouts/homePageContent')
       </section>
   
       <!-- Barre latérale droite -->
