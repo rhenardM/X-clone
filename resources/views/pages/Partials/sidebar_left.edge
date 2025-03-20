@@ -1,6 +1,6 @@
-<div class="h-screen w-96 bg-black fixed left-0 top-0 text-gray-200 border-r border-gray-700  flex flex-col justify-between p-12">
+<div class="h-screen w-96 bg-black fixed left-0 top-0 text-gray-200 border-r border-gray-700  flex flex-col justify-between p-16">
   <!-- Navigation principale -->
-  <ul class="space-y-6">
+  <ul class="space-y-5">
     <!-- Logo -->
       <li>  
         <a href="/" class="flex items-center space-x-3 text-white font-bold text-2xl">  
@@ -12,7 +12,7 @@
 
         <!-- Onglets -->
         <li>
-          <a href="#" class="flex items-center space-x-3 text-gray-200 text-2xl hover:bg-gray-800 p-3 rounded-full">
+          <a href="/" class="flex items-center space-x-3 text-gray-200 text-2xl hover:bg-gray-800 p-3 rounded-full">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-6 font-bold" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 9.75L12 3l9 6.75V21a1.5 1.5 0 01-1.5 1.5h-15A1.5 1.5 0 013 21V9.75z" />
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 22V12h6v10" />
@@ -78,13 +78,14 @@
       Poster
     </button>
   </div>
-
-  <!-- Utilisateur connecté -->
-  <div class="flex items-center space-x-3 mt-8">
-    <img src="/resources/img/user3.jpg" alt="image de profil" class="w-10 h-10 rounded-full" />    
-  <div>
-      <p class="text-gray-200 font-bold">Rhenard_Munongo</p>
-      <p class="text-gray-500 text-sm">@Rhenard_Mun</p>
+    <!-- Utilisateur connecté -->
+    <div class="flex items-center space-x-3 mt-2">
+      <a href="/profil" class="flex items-center space-x-3 hover:bg-gray-800 p-4 rounded-full">
+          <img src="/resources/img/user3.jpg" alt="image de profil" class="w-10 h-10 rounded-full" />
+          <div>
+              <p class="text-gray-200 font-bold">Rhenard_Munongo</p>
+              <p class="text-gray-500 text-sm">@Rhenard_Mun</p>
+          </div>
+      </a>
     </div>
-  </div>
 </div>
