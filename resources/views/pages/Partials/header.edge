@@ -1,0 +1,18 @@
+<header class="bg-black text-white p-1 flex items-center justify-between border-b border-gray-700">
+    <!-- Si on est sur une autre route que la Home -->
+    @if(request.url() !== '/')
+        <div class="flex justify-center items-center gap-4">
+            <a href="/" class="p-2 rounded-full hover:bg-gray-800">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </a>
+        </div>
+    @else
+        <!-- Onglets affichés uniquement sur la page d'accueil -->
+        <div class="flex space-x-4 w-full justify-center gap-64">
+            <button class="px-4 py-2 text-white font-semibold border-b-2 border-blue-500">Pour toi</button>
+            <button class="px-4 py-2 text-gray-400 hover:text-white">Abonnements</button>
+        </div>
+    @endif
+</header>

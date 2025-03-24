@@ -55,17 +55,22 @@
     <main class="flex h-screen">
       <!-- Barre latérale gauche -->
       @include('pages/partials/sidebar_left')
-  
+    
       <!-- Contenu principal -->
-      {{-- <div class="flex-1 bg-black p-6">
-      </div> --}}
-      <section class="flex-1 ml-64 mr-64 bg-black overflow-y-auto h-screen">
-        @include('pages/layouts/tweet_form')
-        @include('pages/layouts/homePageContent')
-      </section>
-  
+      <div class="flex-1 flex flex-col bg-black h-screen">
+        <!-- Inclusion du Header -->
+        @include('pages/Partials/header')
+    
+        <!-- Contenu défilable -->
+        <section class="flex-1 overflow-y-auto px-6">
+          @include('pages/layouts/tweet_form')
+          @include('pages/layouts/homePageContent')
+        </section>
+      </div>
+    
       <!-- Barre latérale droite -->
       @include('pages/partials/sidebar_right')
     </main>
+    
   </body>
 </html>
