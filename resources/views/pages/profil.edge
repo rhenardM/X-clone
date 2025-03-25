@@ -16,38 +16,6 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: [ "Instrument Sans", "sans-serif" ]
-            },
-            colors: {
-              primary: {
-                DEFAULT: "#5A45FF",
-                lighter: "#a599ff"
-              },
-              sand: {
-                1: "var(--sand-1)",
-                2: "var(--sand-2)",
-                3: "var(--sand-3)",
-                4: "var(--sand-4)",
-                5: "var(--sand-5)",
-                6: "var(--sand-6)",
-                7: "var(--sand-7)",
-                8: "var(--sand-8)",
-                9: "var(--sand-9)",
-                10: "var(--sand-10)",
-                11: "var(--sand-11)",
-                12: "var(--sand-12)"
-              }
-            }
-          }
-        }
-      };
-    </script>
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @stack('dumper')
   </head>
@@ -55,11 +23,16 @@
     <main class="flex h-screen">
       <!-- Barre latérale gauche -->
       @include('pages/partials/sidebar_left')
-  
+
+      <!-- Contenu principal -->
+      <div class="flex-1 flex flex-col bg-black h-screen">
+        <!-- Inclusion du Header -->
+          @include('pages/Partials/header')
       <!-- Contenu principal du profil -->
       <section class="flex-1 ml-64 mr-64 bg-black overflow-y-auto h-screen">
         @include('pages/layouts/profil_content')
       </section>
+      </div>
   
       <!-- Barre latérale droite -->
       @include('pages/partials/sidebar_right')
