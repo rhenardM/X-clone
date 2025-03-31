@@ -7,6 +7,7 @@ import Tweet from '#models/tweet'
 import Comment from '#models/comment'
 import Follow from '#models/follow'
 import Retweet from '#models/retweet'
+import Notification from '#models/notification'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -63,6 +64,10 @@ export default class User extends BaseModel {
   // This is the foreign key for the relation to the retweet model
   @hasMany(() => Retweet)
   declare retweets: HasMany<typeof Retweet> // Relation to Retweet model
+  
+  // 
+  @hasMany(() => Notification)
+  declare notifications: HasMany<typeof Notification>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
