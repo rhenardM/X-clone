@@ -6,6 +6,7 @@ import Role from '#models/role'
 import Tweet from '#models/tweet'
 import Comment from '#models/comment'
 import Follow from '#models/follow'
+import Retweet from '#models/retweet'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -58,6 +59,10 @@ export default class User extends BaseModel {
   // This is the foreign key for the relation to the follow model
   @hasMany(() => Follow)
   declare following: HasMany<typeof Follow> // Relation to Follow model
+
+  // This is the foreign key for the relation to the retweet model
+  @hasMany(() => Retweet)
+  declare retweets: HasMany<typeof Retweet> // Relation to Retweet model
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
