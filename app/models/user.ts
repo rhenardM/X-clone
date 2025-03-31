@@ -4,6 +4,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import Role from '#models/role'
 import Tweet from '#models/tweet'
+import Comment from '#models/comment'
 
 export default class User extends BaseModel {
   @column({ isPrimary: true })
@@ -44,6 +45,10 @@ export default class User extends BaseModel {
   // This is the foreign key for the relation to the Tweet model
   @hasMany(() => Tweet)
   declare tweet: HasMany<typeof Tweet> // Relation to Tweet model
+
+// This 
+@hasMany(() => Comment)
+declare comments: HasMany<typeof Comment>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

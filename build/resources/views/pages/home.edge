@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Twitter Clone
+    </title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: [ "Instrument Sans", "sans-serif" ]
+            },
+            colors: {
+              primary: {
+                DEFAULT: "#5A45FF",
+                lighter: "#a599ff"
+              },
+              sand: {
+                1: "var(--sand-1)",
+                2: "var(--sand-2)",
+                3: "var(--sand-3)",
+                4: "var(--sand-4)",
+                5: "var(--sand-5)",
+                6: "var(--sand-6)",
+                7: "var(--sand-7)",
+                8: "var(--sand-8)",
+                9: "var(--sand-9)",
+                10: "var(--sand-10)",
+                11: "var(--sand-11)",
+                12: "var(--sand-12)"
+              }
+            }
+          }
+        }
+      };
+    </script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('dumper')
+  </head>
+  <body class="">
+    <main class="flex h-screen">
+      <!-- Barre latérale gauche -->
+      @include('pages/partials/sidebar_left')
+    
+      <!-- Contenu principal -->
+      <div class="flex-1 flex flex-col bg-black h-screen">
+        <!-- Inclusion du Header -->
+        @include('pages/Partials/header')
+    
+        <!-- Contenu défilable -->
+        <section class="flex-1 overflow-y-auto px-6">
+          @include('pages/layouts/tweet_form')
+          @include('pages/layouts/homePageContent')
+        </section>
+      </div>
+    
+      <!-- Barre latérale droite -->
+      @include('pages/partials/sidebar_right')
+    </main>
+  </body>
+</html>

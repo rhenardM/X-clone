@@ -1,11 +1,10 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
-import type { HasMany } from '@adonisjs/lucid/types/relations'
+import { BaseModel, column, belongsTo } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
-import Comment from '#models/comment'
+import Tweet from '#models/tweet'
 
-export default class Tweet extends BaseModel {
+export default class Comment extends BaseModel {
   @column({ isPrimary: true })
   declare id: number
 
@@ -15,11 +14,14 @@ export default class Tweet extends BaseModel {
   @column()
   declare userId: number
 
+  @column()
+  declare tweetId: number
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User>
 
-  @hasMany(() => Comment)
-  declare comments: HasMany<typeof Comment>
+  @belongsTo(() => Tweet)
+  declare tweet: BelongsTo<typeof Tweet>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      Twitter Clone
+    </title>
+
+    <link rel="preconnect" href="https://fonts.bunny.net" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+    <link
+      href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+      rel="stylesheet"
+    />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @stack('dumper')
+  </head>
+  <body class="">
+    <main class="flex h-screen">
+      <!-- Barre latérale gauche -->
+      @include('pages/partials/sidebar_left')
+
+      <!-- Contenu principal -->
+      <div class="flex-1 flex flex-col bg-black h-screen">
+        <!-- Inclusion du Header -->
+          @include('pages/Partials/header')
+      <!-- Contenu principal du profil -->
+      <section class="flex-1 ml-64 mr-64 bg-black overflow-y-auto h-screen">
+        @include('pages/layouts/profil_content')
+      </section>
+      </div>
+  
+      <!-- Barre latérale droite -->
+      @include('pages/partials/sidebar_right')
+    </main>
+  </body>
+</html>

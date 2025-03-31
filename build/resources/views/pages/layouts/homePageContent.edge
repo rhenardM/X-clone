@@ -1,0 +1,58 @@
+@each(tweet in tweets)
+<div class="bg-black text-white p-4 shadow-lg border-t border-b border-gray-800 w-full max-w-2xl mx-auto mb-6">  
+  <div class="flex items-start space-x-4">  
+    <!-- Profil -->  
+    <img src="{{ tweet.user.avatar }}" alt="Avatar" class="w-12 h-12 rounded-full">  
+    <div class="flex-1">  
+      <div class="flex justify-between items-center">  
+        <div>  
+          <span class="font-bold">{{ tweet.user.name }}</span>  
+          <span class="text-gray-500">  
+            {{ tweet.user.pseudo }} · {{ tweet.createdAt }}  
+          </span>  
+        </div>  
+        <button class="text-gray-500 hover:text-white">...</button>  
+      </div>  
+      <p class="mt-2">{{ tweet.content }}</p>  
+
+      @if(tweet.media && tweet.media.length > 0)  
+        @if(tweet.media[0].includes('<iframe'))   
+            <div class="mt-3 w-full rounded-lg">  
+                {{ tweet.media[0] | raw }} <!-- Afficher le code iframe -->  
+            </div>  
+        @elseif(tweet.media[0].endsWith('.mp4'))   
+            <video controls class="mt-3 w-full rounded-lg">  
+                <source src="{{ tweet.media[0] }}" type="video/mp4">  
+                Votre navigateur ne supporte pas la lecture de vidéos.  
+            </video>  
+        @else  
+            <img src="{{ tweet.media[0] }}" alt="Post Image" class="mt-3 w-full rounded-lg">  
+        @endif  
+      @endif  
+
+      <!-- Icônes d'interaction -->
+      <div class="flex items-center justify-between mt-3 text-gray-500">
+        <button class="hover:text-primary flex items-center space-x-1">
+          <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M11.7049 2.36835L8.24825 2.36002H8.24658C4.60158 2.36002 1.74658 5.21585 1.74658 8.86168C1.74658 12.2767 4.40158 14.8667 7.96742 15.0033V18.1933C7.96742 18.2833 8.00408 18.4317 8.06742 18.5292C8.18575 18.7167 8.38742 18.8183 8.59408 18.8183C8.70908 18.8183 8.82492 18.7867 8.92908 18.72C9.14908 18.58 14.3232 15.27 15.6691 14.1317C17.2541 12.79 18.2024 10.8233 18.2049 8.87168V8.85752C18.1999 5.21835 15.3466 2.36835 11.7049 2.36752V2.36835ZM14.8607 13.1783C13.9157 13.9783 10.8091 16.0159 9.21742 17.0475V14.3917C9.21742 14.0467 8.93825 13.7667 8.59242 13.7667H8.26242C5.21242 13.7667 2.99742 11.7034 2.99742 8.86168C2.99742 5.91668 5.30408 3.61002 8.24742 3.61002L11.7032 3.61835H11.7049C14.6482 3.61835 16.9549 5.92335 16.9566 8.86502C16.9541 10.4567 16.1716 12.0683 14.8616 13.1783H14.8607Z" fill="#6E767D"/>
+          </svg>
+          <span>{{ tweet.comments }}</span>
+        </button>
+        <button class="hover:text-primary flex items-center space-x-1">
+        <svg width="20" height="21" viewBox="0 0 20 21" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M14.6084 6.72501L10.4418 2.55834C10.1976 2.31417 9.80176 2.31417 9.55843 2.55834L5.39176 6.72501C5.14676 6.96917 5.14676 7.36501 5.39176 7.60834C5.63676 7.85167 6.03092 7.85334 6.27509 7.60834L9.37509 4.50834V13C9.37509 13.345 9.65509 13.625 10.0001 13.625C10.3451 13.625 10.6251 13.345 10.6251 13V4.50834L13.7251 7.60834C13.8468 7.73084 14.0068 7.79167 14.1668 7.79167C14.3268 7.79167 14.4868 7.73167 14.6084 7.60834C14.8526 7.36417 14.8526 6.96917 14.6084 6.72501Z" fill="#6E767D"/>
+        <path d="M16.4234 18.7867H3.57675C2.52341 18.7867 1.66675 17.93 1.66675 16.8767V12.1667C1.66675 11.8217 1.94675 11.5417 2.29175 11.5417C2.63675 11.5417 2.91675 11.8217 2.91675 12.1667V16.8767C2.91675 17.2408 3.21258 17.5367 3.57675 17.5367H16.4234C16.7876 17.5367 17.0834 17.2408 17.0834 16.8767V12.1667C17.0834 11.8217 17.3634 11.5417 17.7084 11.5417C18.0534 11.5417 18.3334 11.8217 18.3334 12.1667V16.8767C18.3334 17.93 17.4767 18.7867 16.4234 18.7867Z" fill="#6E767D"/>
+        </svg>
+          <span>{{ tweet.retweets }}</span>
+        </button>
+        <button class="hover:text-primary flex items-center space-x-1">
+          <svg width="18" height="17" viewBox="0 0 18 17" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 16.5317H8.98833C6.83583 16.4917 0.625 10.88 0.625 5.56499C0.625 3.01166 2.72917 0.769989 5.1275 0.769989C7.03583 0.769989 8.31917 2.08666 8.99917 3.04499C9.6775 2.08832 10.9608 0.769989 12.87 0.769989C15.27 0.769989 17.3733 3.01166 17.3733 5.56582C17.3733 10.8792 11.1617 16.4908 9.00917 16.53H9V16.5317ZM5.12833 2.02082C3.395 2.02082 1.87583 3.67749 1.87583 5.56666C1.87583 10.35 7.7375 15.23 9.00083 15.2817C10.2658 15.23 16.1258 10.3508 16.1258 5.56666C16.1258 3.67749 14.6067 2.02082 12.8733 2.02082C10.7667 2.02082 9.59 4.46749 9.58 4.49166C9.38833 4.95999 8.61667 4.95999 8.42417 4.49166C8.4125 4.46666 7.23667 2.02082 5.12917 2.02082H5.12833Z" fill="#6E767D"/>
+            </svg>
+          <span>{{ tweet.likes }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+@endeach
