@@ -5,6 +5,7 @@ import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import Comment from '#models/comment'
 import Retweet from '#models/retweet'
+import Media from '#models/media'
 
 export default class Tweet extends BaseModel {
   @column({ isPrimary: true })
@@ -25,6 +26,10 @@ export default class Tweet extends BaseModel {
   // This is the foreign key for the relation to the retweet model
   @hasMany(() => Retweet)
   declare retweets: HasMany<typeof Retweet> // Relation to Retweet model
+
+  // This is the foreign key for the relation to the Media model
+  @hasMany(() => Media)
+  declare medias: HasMany<typeof Media>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
