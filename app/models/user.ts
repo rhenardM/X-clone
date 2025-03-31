@@ -48,7 +48,7 @@ export default class User extends BaseModel {
 
 // This 
 @hasMany(() => Comment)
-declare comments: HasMany<typeof Comment>
+declare comments: HasMany<typeof Comment>// Relation to Comment model
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
