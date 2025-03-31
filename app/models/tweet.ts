@@ -1,11 +1,13 @@
 import { DateTime } from 'luxon'
-import { BaseModel, column, belongsTo, hasMany } from '@adonisjs/lucid/orm'
+import { BaseModel, column, belongsTo, hasMany, manyToMany } from '@adonisjs/lucid/orm'
+import type { ManyToMany } from '@adonisjs/lucid/types/relations'
 import type { HasMany } from '@adonisjs/lucid/types/relations'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import User from '#models/user'
 import Comment from '#models/comment'
 import Retweet from '#models/retweet'
 import Media from '#models/media'
+import Hashtag from '#models/hashtag'
 
 export default class Tweet extends BaseModel {
   @column({ isPrimary: true })
@@ -30,6 +32,12 @@ export default class Tweet extends BaseModel {
   // This is the foreign key for the relation to the Media model
   @hasMany(() => Media)
   declare medias: HasMany<typeof Media>
+
+  //
+  @manyToMany(() => Hashtag, {
+    pivotTable: 'tweets_hashtags',
+  })
+  declare hashtags: ManyToMany<typeof Hashtag>
 
   @column.dateTime({ autoCreate: true })
   declare createdAt: DateTime
