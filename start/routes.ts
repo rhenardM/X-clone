@@ -18,4 +18,11 @@ router.get('/profil', [ProfilesController, 'show']).as('profil')
 
 // register route
 router.get('/register', [UsersController, 'registerPage']).as('register.page')
-    router.post('/register', [UsersController, 'register']).as('register.submit')
+router.post('/register', [UsersController, 'register']).as('register.submit')
+
+// login route 
+router.get('/login', [UsersController, 'loginPage']).as('login.page')
+router.post('/login', [UsersController, 'login']).as('login.submit')    
+
+// logout route
+router.get('/logout', [UsersController, 'logout']).as('logout')
