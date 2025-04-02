@@ -39,11 +39,9 @@ export default class UsersController {
             return response.redirect('back')
         }
     }
-    public async logout({ auth, response, session }: HttpContext) {
-        await auth.use('web').logout()
-        session.flash('success', 'Logout successful')
-        return response.redirect().toRoute('home')
-    }
+
+    
+    // Register page
     public async registerPage({ view }: HttpContext) {
         return view.render('pages/register')
     }
@@ -73,6 +71,12 @@ export default class UsersController {
     
             return response.redirect('back')
         }
+    }
+
+    public async logout({ auth, response, session }: HttpContext) {
+        await auth.use('web').logout()
+        session.flash('success', 'Logout successful')
+        return response.redirect().toRoute('login.page')
     }
     
 }
