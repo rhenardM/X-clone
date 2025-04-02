@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>
+        Twitter Clone
+        </title>
+        <link rel="preconnect" href="https://fonts.bunny.net" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css" rel="stylesheet">
+        <link
+        href="https://fonts.bunny.net/css?family=instrument-sans:400,400i,500,500i,600,600i,700,700i"
+        rel="stylesheet"
+        />
+
+        <script src="https://cdn.tailwindcss.com"></script>
+
+        <script>
+        tailwind.config = {
+            theme: {
+            extend: {
+                fontFamily: {
+                sans: [ "Instrument Sans", "sans-serif" ]
+                },
+                colors: {
+                primary: {
+                    DEFAULT: "#5A45FF",
+                    lighter: "#a599ff"
+                },
+                sand: {
+                    1: "var(--sand-1)",
+                    2: "var(--sand-2)",
+                    3: "var(--sand-3)",
+                    4: "var(--sand-4)",
+                    5: "var(--sand-5)",
+                    6: "var(--sand-6)",
+                    7: "var(--sand-7)",
+                    8: "var(--sand-8)",
+                    9: "var(--sand-9)",
+                    10: "var(--sand-10)",
+                    11: "var(--sand-11)",
+                    12: "var(--sand-12)"
+                }
+                }
+            }
+            }
+        };
+        </script>
+
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+        @stack('dumper')
+    </head>
+    <body class="bg-red">
+            <div class="min-h-screen bg-gray-900 flex items-center justify-center px-4">
+                <div class="max-w-md w-full bg-gray-800 rounded-lg shadow-md p-6">
+                <h2 class="text-2xl font-bold text-white text-center mb-6">Créer un compte</h2>
+                        <!-- Afficher les messages de succès -->
+                    @if(session.has('success'))
+                    <div class="bg-green-500 text-white text-sm font-medium p-3 rounded-lg mb-4">
+                        {{ session.get('success') }}
+                    </div>
+                @endif
+
+                <!-- Afficher les messages d'erreur -->
+                @if(session.has('errors'))
+                    <div class="bg-red-500 text-white text-sm font-medium p-3 rounded-lg mb-4">
+                        @if(typeof session.get('errors') === 'object')
+                            <ul>
+                                @each(error in session.get('errors'))
+                                    <li>{{ error }}</li>
+                                @endeach
+                            </ul>
+                        @else
+                            {{ session.get('errors') }}
+                        @endif
+                    </div>
+                @endif
+                <form action="/register" method="POST" class="space-y-4">
+                    {{ csrfField() }}
+                    <!-- Prénom -->
+                    <div>
+                    <label for="firstname" class="block text-sm font-medium text-gray-300">Prénom</label>
+                    <input
+                        type="text"
+                        id="firstname"
+                        name="firstname"
+                        placeholder="Votre prénom"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('firstname'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('firstname') }}</div>
+                    @endif --}}
+                    </div>
+            
+                    <!-- Nom -->
+                    <div>
+                    <label for="lastname" class="block text-sm font-medium text-gray-300">Nom</label>
+                    <input
+                        type="text"
+                        id="lastname"
+                        name="lastname"
+                        placeholder="Votre nom"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('lastname'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('lastname') }}</div>
+                    @endif --}}
+                    </div>
+            
+                    <!-- Email -->
+                    <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300">Adresse email</label>
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="Votre email"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('email'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('email') }}</div>
+                    @endif --}}
+                    </div>
+            
+                    <!-- Nom d'utilisateur -->
+                    <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300">Nom d'utilisateur</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Votre nom d'utilisateur"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('username'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('username') }}</div>
+                    @endif --}}
+                    </div>
+
+                    <!-- location -->
+                    <div>
+                    <label for="location" class="block text-sm font-medium text-gray-300">Localisation</label>
+                    <input
+                        type="text"
+                        id="location"
+                        name="location"
+                        placeholder="Votre localisation"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('location'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('location') }}</div>
+                    @endif --}}
+                    </div>
+
+                    <!-- bio -->
+                    <div>
+                    <label for="bio" class="block text-sm font-medium text-gray-300">Bio</label>
+                    <input
+                        type="text"
+                        id="bio"
+                        name="bio"
+                        placeholder="Votre bio"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('bio'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('bio') }}</div>
+                    @endif --}}
+                    </div>
+
+                    <!-- Photo de profil -->
+                    {{-- <div>
+                    <label for="avatar" class="block text-sm font-medium text-gray-300">Photo de profil</label>
+                    <input
+                        type="file"
+                        id="avatar"
+                        name="avatar"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    </div> --}}
+
+                    <!-- role id -->
+                    <div>
+                    <label for="role_id" class="block text-sm font-medium text-gray-300">Role</label>
+                    <input
+                        type="text"
+                        id="role_id"
+                        name="role_id"
+                        placeholder="Votre role"
+                        value="1"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('role_id'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('role_id') }}</div>
+                    @endif --}}
+                    </div>
+            
+                    <!-- Mot de passe -->
+                    <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300">Mot de passe</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder="Votre mot de passe"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('password'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('password') }}</div>
+                    @endif --}}
+                    </div>
+
+                    <!-- Confirmation du mot de passe -->
+                    <div>
+                    <label for="password_confirmation" class="block text-sm font-medium text-gray-300">Confirmer le mot de passe</label>
+                    <input
+                        type="password"
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        placeholder="Confirmez votre mot de passe"
+                        class="mt-1 block w-full px-4 py-2 bg-gray-700 text-white rounded-lg border border-gray-600 focus:ring-blue-500 focus:border-blue-500"
+                        required
+                    />
+                    {{-- @if($errors->has('password_confirmation'))
+                        <div class="text-red-500 text-sm mt-1">{{ $errors->first('password_confirmation') }}</div>
+                    @endif --}}
+                    </div>
+            
+                    <!-- Bouton de soumission -->
+                    <div>
+                    <button
+                        type="submit"
+                        class="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    >
+                        S'inscrire
+                    </button>
+                    </div>
+                </form>
+            
+                <!-- Lien vers la connexion -->
+                <p class="text-gray-400 text-center mt-4">
+                    Vous avez déjà un compte ?
+                    <a href="" class="text-blue-500 hover:underline">Connectez-vous</a>
+                </p>
+                </div>
+            </div>
+    </body>
+</html>
