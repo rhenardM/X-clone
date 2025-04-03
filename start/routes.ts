@@ -11,12 +11,12 @@ import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
 
 // Importing the controllers
-const HomeController = () => import('#controllers/home_controller')
+// const HomeController = () => import('#controllers/home_controller')
 const ProfilesController = () => import('#controllers/profils_controller')
 const UsersController = () => import('#controllers/users_controller')
 const TweetsController = () => import('#controllers/tweets_controller')
 
-router.get('/', [HomeController, 'index']).as('home').use(middleware.auth())
+router.get('/', [TweetsController, 'index']).as('home').use(middleware.auth())
 router.get('/profil', [ProfilesController, 'show']).as('profil')
 
 // register route
