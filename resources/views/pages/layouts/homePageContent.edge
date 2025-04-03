@@ -13,23 +13,34 @@
         </div>  
         <button class="text-gray-500 hover:text-white">...</button>  
       </div>  
-      <p class="mt-2">{{ tweet.content }}</p>  
-
-      {{-- @if(tweet.media && tweet.media.length > 0)  
-        @if(tweet.media[0].includes('<iframe'))   
+      <p class="mt-2">{{ tweet.content }}</p> 
+      
+      {{-- @if (tweet.medias && tweet.medias.length > 0)  
+        @if (tweet.media.url.includes('<iframe'))  
+        @each(media in tweet.medias)
             <div class="mt-3 w-full rounded-lg">  
-                {{ tweet.media[0] | raw }} <!-- Afficher le code iframe -->  
+                @raw(medias.url)  
             </div>  
-        @elseif(tweet.media[0].endsWith('.mp4'))   
+        @elseif (tweet.medias[0].url.endsWith('.mp4'))  
             <video controls class="mt-3 w-full rounded-lg">  
-                <source src="{{ tweet.media[0] }}" type="video/mp4">  
+                <source src="{{ media.url }}" type="video/mp4">  
                 Votre navigateur ne supporte pas la lecture de vidéos.  
             </video>  
         @else  
-            <img src="{{ tweet.media[0] }}" alt="Post Image" class="mt-3 w-full rounded-lg">  
+            <img src="{{ media.url }}" alt="Post Image" class="mt-3 w-full rounded-lg">  
         @endif  
       @endif   --}}
 
+      <div class="w-full {{ tweet.medias.length === 1 ? 'aspect-video' : 'grid grid-cols-2' }}">
+        @each(media in tweet.medias)
+            @if(media.url.endsWith('.mp4') || media.url.endsWith('.webm'))
+                <video src="{{media.url}}" class="rounded-xl max-w-[480px] h-auto max-h-80 object-contain" controls></video>
+            @else
+                <img src="{{media.url}}" class="rounded-xl lg:max-w-[480px] md:w-[460px] max-w-[400px] h-full object-cover ">
+            @endif
+        @endeach
+      </div>
+    
       <!-- Icônes d'interaction -->
       <div class="flex items-center justify-between mt-3 text-gray-500">
         <button class="hover:text-primary flex items-center space-x-1">

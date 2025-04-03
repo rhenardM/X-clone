@@ -1,6 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Tweet from '#models/tweet'
-// import User from '#models/user'
+import Media from '#models/media'
+import app from '@adonisjs/core/services/app'
+
 
 export default class TweetsController {
 
@@ -20,7 +22,10 @@ export default class TweetsController {
             ...tweet.toJSON(),
             createdAt: tweet.createdAt ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') : 'Date inconnue'
         }))
-
+        
+        tweets.forEach(tweet => {
+            console.log('Tweet:', tweet.toJSON())
+        })
         // return view.render('home', { tweets })
         return view.render('pages/home', { tweets : formattedTweets })
 
@@ -57,6 +62,39 @@ export default class TweetsController {
             })
 
             console.log('Tweet created:', tweet)
+
+            // Sauvegarde des fichiers médias
+            const mediaFiles = request.files('media');
+
+            console.log('Fichiers médias reçus:', mediaFiles)
+
+            if (mediaFiles) {
+                for (const mediaFile of mediaFiles) {
+                if (!mediaFile.isValid) {
+                    console.error('Fichier invalide:', mediaFile.errors)
+                    continue
+                }
+
+                // Définission du chemin d'upload
+                const fileName = `${new Date().getTime()}-${mediaFile.clientName}`
+                
+                const uploadDir =  app.publicPath('uploads') // Chemin vers le dossier public/uploads
+
+                await mediaFile.move(uploadDir, {
+                    name: fileName,
+                    overwrite: true,
+                })
+
+                // Associer le média au tweet
+                await Media.create({
+                    tweetId: tweet.id,
+                    url: `/uploads/${fileName}`, // URL publique du média
+                    type: mediaFile.type, // Type type (image, video, etc.)
+                })
+                console.log('Type du fichier média:', mediaFile.type)
+                console.log('Fichier média enregistré:', fileName)
+            }
+        }
 
             return response.redirect().toRoute('home')
             
