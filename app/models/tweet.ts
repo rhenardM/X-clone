@@ -8,6 +8,7 @@ import Comment from '#models/comment'
 import Retweet from '#models/retweet'
 import Media from '#models/media'
 import Hashtag from '#models/hashtag'
+import Like from '#models/like'
 
 export default class Tweet extends BaseModel {
   @column({ isPrimary: true })
@@ -33,10 +34,18 @@ export default class Tweet extends BaseModel {
   @hasMany(() => Media)
   declare medias: HasMany<typeof Media>
 
+  @hasMany(() => Like)
+  declare likes: HasMany<typeof Like>
+
+  // This is the foreign key for the relation to the Like model
+    @hasMany(() => Like)
+  declare allLikes: HasMany<typeof Like>
+
   //
   @manyToMany(() => Hashtag, {
     pivotTable: 'tweets_hashtags',
   })
+
   declare hashtags: ManyToMany<typeof Hashtag>
 
   @column.dateTime({ autoCreate: true })

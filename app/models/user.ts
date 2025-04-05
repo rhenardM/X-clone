@@ -11,6 +11,7 @@ import Comment from '#models/comment'
 import Follow from '#models/follow'
 import Retweet from '#models/retweet'
 import Notification from '#models/notification'
+import Like from '#models/like'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -72,6 +73,10 @@ export default class User extends compose (BaseModel, AuthFinder) {
   // This is the foreign key for the relation to the retweet model
   @hasMany(() => Retweet)
   declare retweets: HasMany<typeof Retweet> // Relation to Retweet model
+
+  //
+  @hasMany(() => Like)
+  declare likes: HasMany<typeof Like>
   
   // 
   @hasMany(() => Notification)

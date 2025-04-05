@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Tweet from '#models/tweet'
 import Media from '#models/media'
+// import Like from '#models/like'
 import app from '@adonisjs/core/services/app'
 
 
@@ -9,30 +10,32 @@ export default class TweetsController {
     /**
      * Show tweets on the homepage
      */
-    public async index({ view }: HttpContext) {
-    try {
-        const tweets = await Tweet.query()
-        .preload('user')
-        .preload('medias')
-        .orderBy('createdAt', 'desc')
+    public async index({ view, auth }: HttpContext) {
+        try {
+            const tweets = await Tweet.query()
+            .preload('user')
+            .preload('medias')
+            .preload('likes', (likesQuery) => {
+                likesQuery.where('user_id', auth.user!.id)
+            })
+            .preload('allLikes') // <- the relation to get all likes
+            .orderBy('createdAt', 'desc')
         
-        console.log('Tweet recuperer',tweets)
-
         const formattedTweets = tweets.map(tweet => ({
             ...tweet.toJSON(),
-            createdAt: tweet.createdAt ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') : 'Date inconnue'
+            isLikedByUser: tweet.likes.length > 0,
+            likeCount: tweet.allLikes.length, // <- count all likes
+            createdAt: tweet.createdAt 
+            ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
+            : 'Date inconnue',
         }))
         
-        tweets.forEach(tweet => {
-            console.log('Tweet:', tweet.toJSON())
-        })
-        // return view.render('home', { tweets })
-        return view.render('pages/home', { tweets : formattedTweets })
-
-    } catch (error) {
-        console.error('Error fetching tweets:', error)
-        return view.render('page/home', { tweets: [] })
-    }
+            return view.render('pages/home', { tweets: formattedTweets })
+        
+        } catch (error) {
+            console.error('Error fetching tweets:', error)
+            return view.render('pages/home', { tweets: [] })
+        }
     }
 
     /**
