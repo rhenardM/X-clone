@@ -29,9 +29,17 @@
 
           <!-- Interaction icons -->
           <div class="flex items-center justify-between mt-4 text-gray-500 text-sm">
-            <button class="hover:text-blue-500 flex items-center space-x-1">
-              <i class="fa-regular fa-comment"></i>
-              <span></span>
+
+            {{-- comment --}}
+            <button class="hover:text-blue-500 flex items-center space-x-1"
+                onclick="toggleCommentForm({{ tweet.id }})"
+            >
+                <i class="fa-regular fa-comment"></i>
+                <span 
+                  id="comment-count-{{ tweet.id }}" 
+                  class="{{ tweet.commentCount > 0 ? 'text-gray-300' : 'hidden' }}">
+                  {{ tweet.commentCount || 0 }}
+              </span>            
             </button>
 
             <!-- Retweet -->
@@ -77,10 +85,91 @@
     </div>
   </div>
 </div>
+
+
+  <!-- Formulaire de commentaire sous forme de pop-up -->
+  <div 
+      id="comment-form-{{ tweet.id }}" 
+      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+  >
+      <div class="bg-gray-800 text-white p-4 rounded-lg w-96">
+          <button 
+              class="text-gray-400 hover:text-white float-right" 
+              onclick="toggleCommentForm({{ tweet.id }})"
+          >
+              &times;
+          </button>
+          <form
+            onsubmit="submitComment(event, {{ tweet.id }})"
+          >
+              <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+              <textarea 
+                  name="content" 
+                  placeholder="Ajouter un commentaire..." 
+                  class="bg-gray-700 text-white px-2 py-1 rounded w-full h-24 resize-none"
+              ></textarea>
+              <button 
+                  class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" 
+                  type="submit"
+              >
+                  Envoyer
+              </button>
+          </form>
+      </div>
+  </div>
 @endeach
 
 
 {{--   --}}
+<script>
+  function toggleCommentForm(tweetId) {
+    const form = document.getElementById(`comment-form-${tweetId}`);
+    form.classList.toggle('hidden');
+  }
+
+  async function submitComment(event, tweetId) {
+    event.preventDefault();
+  
+    const form = event.target.closest('form');
+    const input = form.querySelector('textarea[name="content"]');
+    const content = input.value;
+  
+    try {
+      const response = await fetch(`/tweets/${tweetId}/comment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrfToken }}',
+        },
+        body: JSON.stringify({
+          content,
+        }),
+      });
+  
+      if (!response.ok) {
+        console.error('Erreur lors de l’envoi du commentaire');
+        return;
+      }
+  
+      const { commentCount } = await response.json();
+  
+      // Met à jour le compteur de commentaires
+      const countElement = document.getElementById(`comment-count-${tweetId}`);
+      countElement.textContent = commentCount;
+      countElement.classList.remove('hidden');
+  
+      // Réinitialise le champ et referme le formulaire
+      input.value = '';
+      document.getElementById(`comment-form-${tweetId}`).classList.add('hidden');
+  
+    } catch (error) {
+      console.error('Erreur :', error);
+    }
+  }
+  
+</script>
+
+
 <script>
   async function toggleLike(tweetId) {
     try {

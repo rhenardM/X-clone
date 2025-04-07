@@ -12,12 +12,14 @@ export default class TweetsController {
      */
     public async index({ view, auth }: HttpContext) {
         try {
+            const user = auth.user!
             const tweets = await Tweet.query()
             .preload('user')
             .preload('medias')
             .preload('likes', (likesQuery) => {
                 likesQuery.where('user_id', auth.user!.id)
             })
+            .preload('comments', (query) => query.preload('user')) // Preload the user for each comment
             .preload('allLikes') // <- the relation to get all likes
             .orderBy('createdAt', 'desc')
         
@@ -25,12 +27,13 @@ export default class TweetsController {
             ...tweet.toJSON(),
             isLikedByUser: tweet.likes.length > 0,
             likeCount: tweet.allLikes.length, // <- count all likes
+            commentCount: tweet.comments?.length ?? 0,
             createdAt: tweet.createdAt 
             ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
             : 'Date inconnue',
         }))
         
-            return view.render('pages/home', { tweets: formattedTweets })
+            return view.render('pages/home', { tweets: formattedTweets, user: user})
         
         } catch (error) {
             console.error('Error fetching tweets:', error)
@@ -41,7 +44,7 @@ export default class TweetsController {
     /**
      * Creation of the tweet
      */
-    public async store ({ request, auth, response }: HttpContext) {
+    public async CreateTweet ({ request, auth, response }: HttpContext) {
         
         try {
 
@@ -61,12 +64,12 @@ export default class TweetsController {
 
             const tweet = await Tweet.create({
                 content: content,
-                userId: user.id, // Associez le tweet à l'utilisateur connecté
+                userId: user.id, // Associate the tweet with the logged in user
             })
 
             console.log('Tweet created:', tweet)
 
-            // Sauvegarde des fichiers médias
+            // Backing up media files
             const mediaFiles = request.files('media');
 
             console.log('Fichiers médias reçus:', mediaFiles)
@@ -81,14 +84,14 @@ export default class TweetsController {
                 // Définission du chemin d'upload
                 const fileName = `${new Date().getTime()}-${mediaFile.clientName}`
                 
-                const uploadDir =  app.publicPath('uploads') // Chemin vers le dossier public/uploads
+                const uploadDir =  app.publicPath('uploads') // Path to the public/uploads folder
 
                 await mediaFile.move(uploadDir, {
                     name: fileName,
                     overwrite: true,
                 })
 
-                // Associer le média au tweet
+                //Associate the media with the tweet
                 await Media.create({
                     tweetId: tweet.id,
                     url: `/uploads/${fileName}`, // URL publique du média
