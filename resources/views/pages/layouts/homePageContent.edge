@@ -88,7 +88,7 @@
 
 
   <!-- Formulaire de commentaire sous forme de pop-up -->
-  <div 
+  {{-- <div 
       id="comment-form-{{ tweet.id }}" 
       class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
   >
@@ -116,12 +116,216 @@
               </button>
           </form>
       </div>
-  </div>
+  </div> --}}
+
+  <!-- Formulaire de commentaire sous forme de pop-up -->
+  <div id="comment-form-{{ tweet.id }}" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-start justify-center z-50 pt-16">
+    <div class="bg-black text-white rounded-2xl w-full max-w-xl border border-gray-800 shadow-xl">
+        <!-- En-tête avec bouton de fermeture -->
+        <div class="p-3 border-b border-gray-800 flex items-center">
+            <button 
+                onclick="toggleCommentForm({{ tweet.id }})"
+                class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-800 transition"
+            >
+                <i class="fas fa-times text-xl"></i>
+            </button>
+        </div>
+        
+        <!-- Contenu du tweet original (simulé) -->
+        <div class="p-4 border-b border-gray-800 flex">
+            <div class="mr-3">
+                <div class="w-10 h-10 rounded-full bg-gray-600"></div>
+            </div>
+            <div class="flex-1">
+                <div class="flex items-center">
+                    <span class="font-bold mr-1">{{ auth.user.firstname }} {{auth.user.lastname}}</span>
+                    <span class="text-gray-500 text-sm">{{auth.user.username}}</span>
+                </div>
+                <p class="mt-1 text-base">{{ tweet.content }}</p>
+                <div class="mt-2 text-sm text-gray-500">
+                    En réponse à <span class="text-blue-500">{{auth.user.username}}</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Zone de réponse -->
+        <div class="p-4 flex">
+            <div class="mr-3">
+                <div class="w-10 h-10 rounded-full bg-gray-600"></div>
+            </div>
+            <div class="flex-1">
+                <form onsubmit="submitComment(event, {{ tweet.id }})">
+                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+                    
+                    <textarea 
+                        name="content" 
+                        placeholder="Poster votre réponse" 
+                        class="comment-textarea bg-transparent text-white w-full resize-none placeholder-gray-500 text-base"
+                        oninput="updateCharCount(this)"
+                    ></textarea>
+                    
+                    <!-- Barre de progression (similaire à Twitter) -->
+                    <div class="progress-bar mb-3"></div>
+                    
+                    <!-- Icônes d'options -->
+                    <div class="flex items-center justify-between pt-3 border-t border-gray-800">
+                        <div class="flex space-x-0 text-blue-500">
+                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
+                                <i class="far fa-image text-lg"></i>
+                            </button>
+                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
+                                <i class="fas fa-list-ul text-lg"></i>
+                            </button>
+                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
+                                <i class="far fa-smile text-lg"></i>
+                            </button>
+                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
+                                <i class="far fa-calendar-alt text-lg"></i>
+                            </button>
+                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
+                                <i class="fas fa-map-marker-alt text-lg"></i>
+                            </button>
+                        </div>
+                        
+                        <div class="flex items-center">
+                            <span id="char-count-{{ tweet.id }}" class="char-count">0/280</span>
+                            <button 
+                                type="submit" 
+                                id="submit-btn-{{ tweet.id }}"
+                                class="bg-white text-black px-4 py-1.5 rounded-full font-bold opacity-50 cursor-not-allowed text-sm hover:bg-gray-400 transition"
+                                disabled
+                            >
+                                Répondre
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
 @endeach
 
 
-{{--   --}}
+
 <script>
+  function toggleCommentForm(tweetId) {
+      const form = document.getElementById(`comment-form-${tweetId}`);
+      form.classList.toggle('hidden');
+      
+      // Reset form when opening
+      if (!form.classList.contains('hidden')) {
+          const textarea = form.querySelector('textarea');
+          textarea.value = '';
+          updateCharCount(textarea);
+          
+          // Reset progress bar
+          const progressBar = form.querySelector('.progress-bar');
+          progressBar.style.width = '0%';
+          
+          // Reset submit button
+          const submitBtn = form.querySelector(`#submit-btn-${tweetId}`);
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          submitBtn.classList.remove('opacity-100', 'cursor-pointer');
+          
+          // Reset char count
+          const charCount = form.querySelector(`#char-count-${tweetId}`);
+          charCount.textContent = '0/280';
+          charCount.className = 'char-count';
+      }
+  }
+  
+  function updateCharCount(textarea) {
+      const content = textarea.value;
+      const tweetId = textarea.closest('form').getAttribute('onsubmit').match(/\d+/)[0];
+      const progressBar = textarea.closest('form').querySelector('.progress-bar');
+      const submitBtn = textarea.closest('form').querySelector(`#submit-btn-${tweetId}`);
+      const charCount = textarea.closest('form').querySelector(`#char-count-${tweetId}`);
+      
+      // Update character count
+      const remaining = 280 - content.length;
+      charCount.textContent = `${content.length}/280`;
+      
+      // Calculate percentage (Twitter uses 280 chars max)
+      const percentage = Math.min((content.length / 280) * 100, 100);
+      progressBar.style.width = `${percentage}%`;
+      
+      // Change color when approaching limit (like Twitter)
+      if (remaining < 0) {
+          progressBar.style.backgroundColor = '#f4212e'; // Red error
+          charCount.className = 'char-count error';
+      } else if (remaining <= 20) {
+          progressBar.style.backgroundColor = '#ffd400'; // Yellow warning
+          charCount.className = 'char-count warning';
+      } else {
+          progressBar.style.backgroundColor = '#1d9bf0'; // Blue normal
+          charCount.className = 'char-count';
+      }
+      
+      // Enable/disable submit button
+      if (content.trim().length > 0 && content.length <= 280) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+          submitBtn.classList.add('opacity-100', 'cursor-pointer');
+      } else {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+          submitBtn.classList.remove('opacity-100', 'cursor-pointer');
+      }
+  }
+  
+  async function submitComment(event, tweetId) {
+      event.preventDefault();
+      
+      const form = event.target.closest('form');
+      const input = form.querySelector('textarea[name="content"]');
+      const content = input.value.trim();
+      
+      if (content.length === 0 || content.length > 280) {
+          return;
+      }
+      
+      try {
+          const response = await fetch(`/tweets/${tweetId}/comment`, {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRF-TOKEN': '{{ csrfToken }}',
+              },
+              body: JSON.stringify({
+                  content,
+              }),
+          });
+          
+          if (!response.ok) {
+              console.error('Erreur lors de l\'envoi du commentaire');
+              return;
+          }
+          
+          const { commentCount } = await response.json();
+          
+          // Met à jour le compteur de commentaires
+          const countElement = document.getElementById(`comment-count-${tweetId}`);
+          if (countElement) {
+              countElement.textContent = commentCount;
+              countElement.classList.remove('hidden');
+          }
+          
+          // Réinitialise le champ et referme le formulaire
+          input.value = '';
+          document.getElementById(`comment-form-${tweetId}`).classList.add('hidden');
+          
+      } catch (error) {
+          console.error('Erreur :', error);
+      }
+  }
+</script>
+
+
+
+{{--   --}}
+{{-- <script>
   function toggleCommentForm(tweetId) {
     const form = document.getElementById(`comment-form-${tweetId}`);
     form.classList.toggle('hidden');
@@ -167,7 +371,7 @@
     }
   }
   
-</script>
+</script> --}}
 
 
 <script>

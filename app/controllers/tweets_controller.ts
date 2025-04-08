@@ -22,7 +22,9 @@ export default class TweetsController {
             .preload('comments', (query) => query.preload('user')) // Preload the user for each comment
             .preload('allLikes') // <- the relation to get all likes
             .orderBy('createdAt', 'desc')
-        
+            
+            user.username = `@${user.username}` // Add @ to the username
+            
         const formattedTweets = tweets.map(tweet => ({
             ...tweet.toJSON(),
             isLikedByUser: tweet.likes.length > 0,
@@ -31,9 +33,10 @@ export default class TweetsController {
             createdAt: tweet.createdAt 
             ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
             : 'Date inconnue',
+            // user: { ...user, username: `@${user.username}` } // Add @ to the username
         }))
         
-            return view.render('pages/home', { tweets: formattedTweets, user: user})
+            return view.render('pages/home', { tweets: formattedTweets, user: user })
         
         } catch (error) {
             console.error('Error fetching tweets:', error)
