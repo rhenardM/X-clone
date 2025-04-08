@@ -14,9 +14,13 @@
         <button class="text-gray-500 hover:text-white text-xl leading-none">...</button>  
       </div>  
 
-      <p class="mt-2 text-sm md:text-base whitespace-pre-wrap">{{ tweet.content }}</p>
+      <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
+        <p class="mt-2 text-sm md:text-base whitespace-pre-wrap">{{ tweet.content }}</p>
+      </a>
 
           <!-- Media section -->
+          <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
+
           <div class="w-full mt-3 {{ tweet.medias.length === 1 ? 'aspect-video' : 'grid grid-cols-2 gap-2' }}">
             @each(media in tweet.medias)
                 @if(media.url.endsWith('.mp4') || media.url.endsWith('.webm'))
@@ -26,6 +30,7 @@
                 @endif
             @endeach
           </div>
+        </a>
 
           <!-- Interaction icons -->
           <div class="flex items-center justify-between mt-4 text-gray-500 text-sm">
@@ -83,6 +88,11 @@
           </button>
       </div>
     </div>
+      <!-- Conteneur des commentaires -->
+
+  </div>
+  <div id="comments-section-{{ tweet.id }}" class="hidden mt-2 space-y-2 ">
+    <!-- Les commentaires seront injectés ici dynamiquement -->
   </div>
 </div>
 
@@ -207,6 +217,62 @@
 @endeach
 
 
+{{-- This script displays comments dynamically --}}
+<script>
+  event.preventDefault();
+  async function toggleComments(event,tweetId) {
+    console.log('Clicked for tweetId:', tweetId); // 👈 Vérifie qu'on arrive ici
+
+    const container = document.getElementById(`comments-section-${tweetId}`);
+
+    // Si les commentaires sont déjà visibles, on les masque
+    if (!container.classList.contains('hidden')) {
+      container.classList.add('hidden');
+      container.innerHTML = '';
+      return;
+    }
+
+    try {
+      const res = await fetch(`/comments/${tweetId}`);
+      const comments = await res.json();
+
+      if (!Array.isArray(comments)) throw new Error("Erreur données");
+
+      let html = '';
+      comments.forEach(comment => {
+        html += `
+          <div class="bg-gray-800 p-4 rounded-lg shadow-md">
+            <div class="flex items-start space-x-3">
+              <!-- Avatar de l'utilisateur -->
+              <img src="${comment.user.avatar || '/default-avatar.png'}" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+              
+              <!-- Contenu du commentaire -->
+              <div class="flex-1">
+                <div class="flex items-center justify-between">
+                  <!-- Nom d'utilisateur et date -->
+                  <div>
+                    <p class="text-sm font-semibold text-white">@${comment.user.username}</p>
+                    <p class="text-xs text-gray-400">${new Date(comment.created_at).toLocaleString()}</p>
+                  </div>
+                </div>
+                <!-- Texte du commentaire -->
+                <p class="mt-2 text-gray-300 text-sm leading-relaxed">${comment.content}</p>
+              </div>
+            </div>
+          </div>
+        `;
+      });
+
+      container.innerHTML = html;
+      container.classList.remove('hidden');
+
+    } catch (error) {
+      console.error('Erreur lors du chargement des commentaires :', error);
+    }
+  }
+</script>
+
+{{-- end --}}
 
 <script>
   function toggleCommentForm(tweetId) {
@@ -321,8 +387,6 @@
       }
   }
 </script>
-
-
 
 {{--   --}}
 {{-- <script>

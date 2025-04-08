@@ -19,11 +19,6 @@ export default class CommentsController {
 
         console.log('Content:', content)
 
-        // const comment = await user.related('comments').create({
-        //     tweetId,
-        //     content,
-        // })
-
         const comment = await Comment.create({
             userId: user.id,
             tweetId,
@@ -41,7 +36,18 @@ export default class CommentsController {
             commentCount: commentCount[0].total,
             comment,
         })
+    }
 
+    public async getComments({ params }: HttpContext) {
+        const tweetId = params.id
+
+            const comments = await Comment
+            .query()
+            .where('tweet_id', tweetId)
+            .preload('user')
+            .orderBy('created_at', 'asc')
+        
+        return comments
     }
 
 

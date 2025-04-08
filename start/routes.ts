@@ -40,4 +40,5 @@ router.post('/tweets/:id/like', [LikesController, 'like']).as('like.index').use(
 
 // comment route
 //Route.post('/tweets/:id/comment', 'CommentsController.store').middleware('auth')
+router.get('/comments/:id', [CommentsController, 'getComments']).as('comment.getComments').use(middleware.auth()).as('tweets.comments')
 router.post('/tweets/:id/comment', [CommentsController, 'createComments']).as('comment.createComments').use(middleware.auth()).as('tweets.comment')
