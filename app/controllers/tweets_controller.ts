@@ -1,7 +1,6 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Tweet from '#models/tweet'
 import Media from '#models/media'
-// import Like from '#models/like'
 import app from '@adonisjs/core/services/app'
 
 
@@ -15,7 +14,15 @@ export default class TweetsController {
             const user = auth.user!
             const tweets = await Tweet.query()
             .preload('user')
+            
+            .preload('retweetFrom', (query) => {
+                query.preload('user').preload('medias')
+            })
+
+            .withCount('retweets') // <== important
+
             .preload('medias')
+
             .preload('likes', (likesQuery) => {
                 likesQuery.where('user_id', auth.user!.id)
             })
@@ -30,10 +37,10 @@ export default class TweetsController {
             isLikedByUser: tweet.likes.length > 0,
             likeCount: tweet.allLikes.length, // <- count all likes
             commentCount: tweet.comments?.length ?? 0,
+            retweetCount: tweet.$extras.retweets_count, // <- use the count from the query
             createdAt: tweet.createdAt 
             ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
             : 'Date inconnue',
-            // user: { ...user, username: `@${user.username}` } // Add @ to the username
         }))
         
             return view.render('pages/home', { tweets: formattedTweets, user: user })

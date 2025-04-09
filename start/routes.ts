@@ -17,6 +17,7 @@ const UsersController = () => import('#controllers/users_controller')
 const TweetsController = () => import('#controllers/tweets_controller')
 const LikesController = () => import('#controllers/likes_controller')
 const CommentsController = () => import('#controllers/comments_controller')
+const RetweetsController = () => import('#controllers/retweets_controller')
 
 router.get('/', [TweetsController, 'index']).as('home').use(middleware.auth())
 router.get('/profil', [ProfilesController, 'show']).as('profil')
@@ -39,6 +40,8 @@ router.post('/tweet', [TweetsController, 'CreateTweet']).as('tweet.submit').use(
 router.post('/tweets/:id/like', [LikesController, 'like']).as('like.index').use(middleware.auth()).as('tweets.like')
 
 // comment route
-//Route.post('/tweets/:id/comment', 'CommentsController.store').middleware('auth')
 router.get('/comments/:id', [CommentsController, 'getComments']).as('comment.getComments').use(middleware.auth()).as('tweets.comments')
 router.post('/tweets/:id/comment', [CommentsController, 'createComments']).as('comment.createComments').use(middleware.auth()).as('tweets.comment')
+
+// retweet route
+router.post('/retweets', [RetweetsController, 'retweetCreate']).as('retweet.create').use(middleware.auth()).as('tweets.retweet')

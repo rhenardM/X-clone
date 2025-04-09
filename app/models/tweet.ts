@@ -20,6 +20,9 @@ export default class Tweet extends BaseModel {
   @column()
   declare userId: number
 
+  @column()
+  declare retweetFromId: number
+
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User> // Relation to User model
 
@@ -40,6 +43,11 @@ export default class Tweet extends BaseModel {
   // This is the foreign key for the relation to the Like model
     @hasMany(() => Like)
   declare allLikes: HasMany<typeof Like>
+
+  // This is the foreign key for the relation to the retweet model
+  @belongsTo(() => Tweet, { foreignKey: 'retweetFromId' })
+  declare retweetFrom: BelongsTo<typeof Tweet>
+  
 
   //
   @manyToMany(() => Hashtag, {

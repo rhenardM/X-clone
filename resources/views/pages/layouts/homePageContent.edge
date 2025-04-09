@@ -1,133 +1,92 @@
 @each(tweet in tweets)
-<div class="bg-black text-white p-4 shadow-lg border-t border-b border-gray-800 w-full max-w-2xl mx-auto mb-6 rounded-xl">  
-  <div class="flex items-start gap-4" id="tweet-{{ tweet.id }}">  
-    <!-- Profil -->  
-    <img src="{{ tweet.user?.avatar || '/default-avatar.png' }}" alt="Avatar" class="w-12 h-12 rounded-full object-cover">      
-    <div class="flex-1">  
-      <div class="flex justify-between items-start gap-2 flex-wrap">  
-        <div class="text-sm md:text-base">  
-          <span class="font-bold block">{{ tweet.user.firstname }} {{ tweet.user.lastname }}</span>  
-          <span class="text-gray-500 text-xs md:text-sm">  
-            {{ tweet.user.username }} · {{ tweet.createdAt }}  
-          </span>  
-        </div>  
-        <button class="text-gray-500 hover:text-white text-xl leading-none">...</button>  
-      </div>  
+<div class="bg-black text-white p-4 shadow-lg border-t border-b border-gray-800 w-full max-w-2xl mx-auto mb-6 rounded-xl">
+
+  <!-- Si retweet -->
+  @if(tweet.retweetFrom)
+    <div class="text-gray-400 text-sm mb-4 flex items-center space-x-1">
+      <img src="{{ (tweet.retweetFrom ? tweet.retweetFrom.user?.avatar : tweet.user?.avatar) || '/default-avatar.png' }}" class="w-12 h-12 rounded-full object-cover">
+      <span>Retweeté par {{ tweet.user.username }}</span>
+    </div>
+  @endif
+
+  <div class="flex items-start gap-4" id="tweet-{{ tweet.id }}">
+    <img src="{{ (tweet.retweetFrom ? tweet.retweetFrom.user?.avatar : tweet.user?.avatar) || '/default-avatar.png' }}" class="w-12 h-12 rounded-full object-cover">
+
+    <div class="flex-1">
+      <div class="flex justify-between items-start gap-2 flex-wrap">
+        <div class="text-sm md:text-base">
+          <span class="font-bold block">
+            {{ tweet.retweetFrom ? tweet.retweetFrom.user.firstname + ' ' + tweet.retweetFrom.user.lastname : tweet.user.firstname + ' ' + tweet.user.lastname }}
+          </span>
+          <span class="text-gray-500 text-xs md:text-sm">
+            {{ tweet.retweetFrom ? tweet.retweetFrom.user.username : tweet.user.username }} · {{ tweet.createdAt }}
+          </span>
+        </div>
+        <button class="text-gray-500 hover:text-white text-xl leading-none">...</button>
+      </div>
 
       <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
-        <p class="mt-2 text-sm md:text-base whitespace-pre-wrap">{{ tweet.content }}</p>
+        <p class="mt-2 text-sm md:text-base whitespace-pre-wrap">
+          {{ tweet.retweetFrom ? tweet.retweetFrom.content : tweet.content }}
+        </p>
       </a>
 
-          <!-- Media section -->
-          <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
-
-          <div class="w-full mt-3 {{ tweet.medias.length === 1 ? 'aspect-video' : 'grid grid-cols-2 gap-2' }}">
-            @each(media in tweet.medias)
-                @if(media.url.endsWith('.mp4') || media.url.endsWith('.webm'))
-                    <video src="{{media.url}}" class="rounded-xl w-full h-auto max-h-80 object-contain" controls></video>
-                @else
-                    <img src="{{media.url}}" class="rounded-xl w-full h-auto max-h-96 object-cover">
-                @endif
+      <!-- Media (du tweet original si retweet) -->
+      <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
+        @if((tweet.retweetFrom ? tweet.retweetFrom.medias.length : tweet.medias.length) > 0)
+          <div class="w-full mt-3 {{ (tweet.retweetFrom ? tweet.retweetFrom.medias.length : tweet.medias.length) === 1 ? 'aspect-video' : 'grid grid-cols-2 gap-2' }}">
+            @each(media in (tweet.retweetFrom ? tweet.retweetFrom.medias : tweet.medias))
+              @if(media.url.endsWith('.mp4') || media.url.endsWith('.webm'))
+                <video src="{{ media.url }}" class="rounded-xl w-full h-auto max-h-80 object-contain" controls></video>
+              @else
+                <img src="{{ media.url }}" class="rounded-xl w-full h-auto max-h-96 object-cover">
+              @endif
             @endeach
           </div>
-        </a>
+        @endif
+      </a>
 
-          <!-- Interaction icons -->
-          <div class="flex items-center justify-between mt-4 text-gray-500 text-sm">
+      <!-- Icons interaction -->
+      <div class="flex items-center justify-between mt-4 text-gray-500 text-sm">
+        <!-- Comment -->
+        <button class="hover:text-blue-500 flex items-center space-x-1" onclick="toggleCommentForm({{ tweet.id }})">
+          <i class="fa-regular fa-comment"></i>
+          <span id="comment-count-{{ tweet.id }}" class="{{ tweet.commentCount > 0 ? 'text-gray-300' : 'hidden' }}">
+            {{ tweet.commentCount || 0 }}
+          </span>
+        </button>
 
-            {{-- comment --}}
-            <button class="hover:text-blue-500 flex items-center space-x-1"
-                onclick="toggleCommentForm({{ tweet.id }})"
-            >
-                <i class="fa-regular fa-comment"></i>
-                <span 
-                  id="comment-count-{{ tweet.id }}" 
-                  class="{{ tweet.commentCount > 0 ? 'text-gray-300' : 'hidden' }}">
-                  {{ tweet.commentCount || 0 }}
-              </span>            
-            </button>
+        <!-- Retweet -->
+        <button class="hover:text-green-500 flex items-center space-x-1" onclick="toggleRetweet({{ tweet.id }})">
+          <i class="fa-solid fa-retweet"></i>
+          <span 
+            id="retweet-count-{{ tweet.id }}" 
+            class="transition-opacity duration-150 {{ tweet.retweetCount > 0 ? 'text-gray-300' : 'hidden' }}">
+            {{ tweet.retweetCount }}
+        </span>
+        </button>
 
-            <!-- Retweet -->
-            <button class="hover:text-green-500 flex items-center space-x-1">
-              <i class="fa-solid fa-retweet"></i>
-              <span></span>
-            </button>
+        <!-- Like --> 
+        <button class="like-button flex items-center space-x-1 group" onclick="toggleLike({{ tweet.id }})">
+          <i id="like-icon-{{ tweet.id }}" class="fa-heart transition-all duration-150 {{ tweet.isLikedByUser ? 'fa-solid text-red-500' : 'fa-regular text-gray-400' }}"></i>
+          <span id="like-count-{{ tweet.id }}" 
+          class="transition-opacity duration-150 {{ tweet.likeCount > 0 ? 'text-gray-300' : 'hidden' }}">
+            {{ tweet.likeCount || 0 }}
+          </span>
+        </button>
 
-            <!-- Like -->
-            <button 
-            class="like-button flex items-center space-x-1 group" 
-            onclick="toggleLike({{ tweet.id }})">
-            
-            <i 
-              id="like-icon-{{ tweet.id }}" 
-              class="fa-heart transition-all duration-150 
-              {{ tweet.isLikedByUser ? 'fa-solid text-red-500' : 'fa-regular text-gray-400' }}">
-            </i>
-          
-            <span 
-              id="like-count-{{ tweet.id }}" 
-              class="transition-opacity duration-150 
-              {{ tweet.likeCount > 0 ? 'text-gray-300' : 'hidden' }}">
-              {{ tweet.likeCount || 0 }}
-            </span>
-          
-          </button>
-      
-          <!-- Signet -->
-          <button class="hover:text-yellow-500 flex items-center space-x-1">
-            <i class="fa-regular fa-bookmark"></i>
-          </button>
-
-          <!-- Sharing -->
-          <button class="hover:text-gray-700 flex items-center space-x-1">
-            <i class="fa-solid fa-share"></i>
-          </button>
-            <!-- More options -->
-          <button class="hover:text-gray-700 flex items-center space-x-1">
-            <i class="fa-solid fa-ellipsis"></i>
-          </button>
+        <button class="hover:text-yellow-500 flex items-center space-x-1"><i class="fa-regular fa-bookmark"></i></button>
+        <button class="hover:text-gray-700 flex items-center space-x-1"><i class="fa-solid fa-share"></i></button>
+        <button class="hover:text-gray-700 flex items-center space-x-1"><i class="fa-solid fa-ellipsis"></i></button>
       </div>
     </div>
-      <!-- Conteneur des commentaires -->
-
   </div>
+
+  <!-- Section comments -->
   <div id="comments-section-{{ tweet.id }}" class="hidden mt-2 space-y-2 ">
     <!-- Les commentaires seront injectés ici dynamiquement -->
   </div>
 </div>
-
-
-  <!-- Formulaire de commentaire sous forme de pop-up -->
-  {{-- <div 
-      id="comment-form-{{ tweet.id }}" 
-      class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
-  >
-      <div class="bg-gray-800 text-white p-4 rounded-lg w-96">
-          <button 
-              class="text-gray-400 hover:text-white float-right" 
-              onclick="toggleCommentForm({{ tweet.id }})"
-          >
-              &times;
-          </button>
-          <form
-            onsubmit="submitComment(event, {{ tweet.id }})"
-          >
-              <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-              <textarea 
-                  name="content" 
-                  placeholder="Ajouter un commentaire..." 
-                  class="bg-gray-700 text-white px-2 py-1 rounded w-full h-24 resize-none"
-              ></textarea>
-              <button 
-                  class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600" 
-                  type="submit"
-              >
-                  Envoyer
-              </button>
-          </form>
-      </div>
-  </div> --}}
-
   <!-- Formulaire de commentaire sous forme de pop-up -->
   <div id="comment-form-{{ tweet.id }}" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-start justify-center z-50 pt-16">
     <div class="bg-black text-white rounded-2xl w-full max-w-xl border border-gray-800 shadow-xl">
@@ -217,15 +176,85 @@
 @endeach
 
 
+{{-- retweet togle --}}
+
+<script>
+    async function toggleRetweet(tweetId) {
+      try {
+        const response = await fetch('/retweets', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': '{{ csrfToken }}',
+          },
+          body: JSON.stringify({ tweetId })
+        });
+      
+        if (!response.ok) {
+          console.error('Erreur lors du retweet');
+          return;
+        }
+        
+      
+        const { retweetCount } = await response.json();
+      
+        const countElement = document.getElementById(`retweet-count-${tweetId}`);
+
+        if (retweetCount > 0) {
+            countElement.classList.remove('hidden');
+        } else {
+            countElement.classList.add('hidden');
+        }
+        
+        countElement.textContent = retweetCount;
+        countElement.classList.remove('hidden');
+      }
+      catch (error) {
+        console.error('Erreur lors du traitement:', error);
+      }
+
+    }
+</script>
+
+
+{{-- <script>
+  async function retweet(tweetId) {
+    try {
+      const response = await fetch('/retweets', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrfToken }}'
+        },
+        body: JSON.stringify({ tweetId })
+      })
+  
+      if (!response.ok) {
+        console.error('Erreur lors du retweet')
+        return
+      }
+  
+      const { retweetCount } = await response.json()
+      const countElement = document.getElementById(`retweet-count-${tweetId}`)
+      countElement.textContent = retweetCount
+      countElement.classList.remove('hidden')
+    } catch (err) {
+      console.error('Erreur :', error)
+    }
+  }  
+</script> --}}
+
+
+
 {{-- This script displays comments dynamically --}}
 <script>
   event.preventDefault();
   async function toggleComments(event,tweetId) {
-    console.log('Clicked for tweetId:', tweetId); // 👈 Vérifie qu'on arrive ici
+    console.log('Clicked for tweetId:', tweetId); 
 
     const container = document.getElementById(`comments-section-${tweetId}`);
 
-    // Si les commentaires sont déjà visibles, on les masque
+    // if the container is already visible, hide it
     if (!container.classList.contains('hidden')) {
       container.classList.add('hidden');
       container.innerHTML = '';
@@ -251,7 +280,7 @@
                 <div class="flex items-center justify-between">
                   <!-- Nom d'utilisateur et date -->
                   <div>
-                    <p class="text-sm font-semibold text-white">@${comment.user.username}</p>
+                    <p class="text-sm font-semibold text-white">${comment.user.username}</p>
                     <p class="text-xs text-gray-400">${new Date(comment.created_at).toLocaleString()}</p>
                   </div>
                 </div>
@@ -274,6 +303,7 @@
 
 {{-- end --}}
 
+{{-- comment --}}
 <script>
   function toggleCommentForm(tweetId) {
       const form = document.getElementById(`comment-form-${tweetId}`);
@@ -388,56 +418,7 @@
   }
 </script>
 
-{{--   --}}
-{{-- <script>
-  function toggleCommentForm(tweetId) {
-    const form = document.getElementById(`comment-form-${tweetId}`);
-    form.classList.toggle('hidden');
-  }
-
-  async function submitComment(event, tweetId) {
-    event.preventDefault();
-  
-    const form = event.target.closest('form');
-    const input = form.querySelector('textarea[name="content"]');
-    const content = input.value;
-  
-    try {
-      const response = await fetch(`/tweets/${tweetId}/comment`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrfToken }}',
-        },
-        body: JSON.stringify({
-          content,
-        }),
-      });
-  
-      if (!response.ok) {
-        console.error('Erreur lors de l’envoi du commentaire');
-        return;
-      }
-  
-      const { commentCount } = await response.json();
-  
-      // Met à jour le compteur de commentaires
-      const countElement = document.getElementById(`comment-count-${tweetId}`);
-      countElement.textContent = commentCount;
-      countElement.classList.remove('hidden');
-  
-      // Réinitialise le champ et referme le formulaire
-      input.value = '';
-      document.getElementById(`comment-form-${tweetId}`).classList.add('hidden');
-  
-    } catch (error) {
-      console.error('Erreur :', error);
-    }
-  }
-  
-</script> --}}
-
-
+{{-- like --}}
 <script>
   async function toggleLike(tweetId) {
     try {
