@@ -216,36 +216,6 @@
     }
 </script>
 
-
-{{-- <script>
-  async function retweet(tweetId) {
-    try {
-      const response = await fetch('/retweets', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRF-TOKEN': '{{ csrfToken }}'
-        },
-        body: JSON.stringify({ tweetId })
-      })
-  
-      if (!response.ok) {
-        console.error('Erreur lors du retweet')
-        return
-      }
-  
-      const { retweetCount } = await response.json()
-      const countElement = document.getElementById(`retweet-count-${tweetId}`)
-      countElement.textContent = retweetCount
-      countElement.classList.remove('hidden')
-    } catch (err) {
-      console.error('Erreur :', error)
-    }
-  }  
-</script> --}}
-
-
-
 {{-- This script displays comments dynamically --}}
 <script>
   event.preventDefault();

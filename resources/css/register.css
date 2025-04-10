@@ -1,0 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: #000;
+    color: #fff;
+}
+.x-logo {
+    color: #fff;
+}
+.input-field {
+    background-color: transparent;
+    border: 1px solid #333;
+    transition: all 0.2s;
+}
+.input-field:focus {
+    border-color: #1d9bf0;
+    outline: none;
+    box-shadow: 0 0 0 1px #1d9bf0;
+}
+.next-btn {
+    background-color: #fff;
+    color: #000;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+.next-btn:hover {
+    background-color: #e6e6e6;
+}
+.next-btn:disabled {
+    background-color: #333;
+    color: #666;
+    cursor: not-allowed;
+}
+.signin-btn {
+    border: 1px solid #333;
+    color: #1d9bf0;
+    font-weight: 700;
+    transition: background-color 0.2s;
+}
+.signin-btn:hover {
+    background-color: rgba(29, 155, 240, 0.1);
+}
+.divider {
+    border-bottom: 1px solid #333;
+    position: relative;
+}
+.divider-text {
+    background-color: #000;
+    padding: 0 10px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.step-indicator {
+    height: 4px;
+    background-color: #333;
+    border-radius: 2px;
+}
+.step-indicator.active {
+    background-color: #71767b;
+}
+.step-indicator.completed {
+    background-color: #1d9bf0;
+}
+.modal-content {
+    max-height: 90vh;
+    overflow-y: auto;
+}
+.date-select {
+    background-color: #000;
+    border: 1px solid #333;
+    color: #fff;
+}
+.date-select:focus {
+    border-color: #1d9bf0;
+    outline: none;
+}
+.checkbox-container {
+    border: 1px solid #333;
+    border-radius: 4px;
+}
+.checkbox-container:hover {
+    background-color: #111;
+}
+.checkbox-container.selected {
+    border-color: #1d9bf0;
+    background-color: rgba(29, 155, 240, 0.1);
+}

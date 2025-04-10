@@ -26,7 +26,7 @@ export default class LikesController {
         isLiked = true
       }
     
-      const likeCount = await db
+      const likeCount = await db 
         .from('likes')
         .where('tweet_id', tweetId)
         .count('* as total')
