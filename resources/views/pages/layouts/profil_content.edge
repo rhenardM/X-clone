@@ -118,63 +118,115 @@
     </div>
 @endeach
   </section>
-{{-- 
-  <!-- Bouton Config -->
-<button onclick="toggleProfileSettings()" class="mt-2 px-4 py-1 bg-blue-500 rounded text-white">Configurer le profil</button> --}}
 
-<!-- message flash -->
-@if(session.get('success'))
-    <div class="bg-green-500 text-white p-4 rounded-lg mb-4">
-        {{ session.get('success') }}
+  <!-- Profile Settings Modal -->
+  <div id="profile-settings" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 z-50 flex justify-center items-center">
+    <div class="bg-black text-white rounded-xl w-full max-w-xl overflow-hidden">
+        <!-- Header -->
+        <div class="relative p-4 border-b border-gray-800">
+            <div class="flex items-center">
+                <button onclick="toggleProfileSettings()" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center mr-6">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <div>
+                    <h2 class="text-xl font-bold">Edit profile</h2>
+                </div>
+            </div>
+            <button class="absolute right-4 top-4 bg-white text-black font-bold px-4 py-1.5 rounded-full hover:bg-gray-200 transition">
+                Save
+            </button>
+        </div>
+
+        <!-- Banner and Profile Picture -->
+        <div class="relative">
+            <!-- Banner -->
+            <div class="banner-preview bg-gray-800">
+                <img id="banner-preview-img" src="{{auth.user.banner}}" class="w-full h-full object-cover" alt="Banner">
+                <div class="edit-overlay">
+                    <label for="banner" class="file-input-label bg-black bg-opacity-60 rounded-full p-2">
+                        <i class="fas fa-camera text-white"></i>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Profile Picture -->
+            <div class="absolute -bottom-16 left-4">
+                <div class="profile-pic-preview bg-gray-700 border-4 border-black">
+                    <img id="profile-pic-preview-img" src="{{auth.user.profile_picture}}" class="w-full h-full object-cover" alt="Profile">
+                    <div class="edit-overlay">
+                        <label for="profile_picture" class="file-input-label bg-black bg-opacity-60 rounded-full p-2">
+                            <i class="fas fa-camera text-white"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data" class="mt-20 px-4 pb-6">
+            {{ csrfField() }}
+            
+            <input type="file" id="profile_picture" name="profile_picture" class="file-input" accept="image/*">
+            <input type="file" id="banner" name="banner" class="file-input" accept="image/*">
+            
+            <div class="space-y-4">
+                <!-- Name -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Name</label>
+                    <input type="text" name="firstname" value="{{ auth.user.firstname }}" 
+                      class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">
+                </div>
+
+                <!-- Bio -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Bio</label>
+                    <textarea name="bio" rows="3" 
+                              class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">{{ auth.user.bio }}</textarea>
+                </div>
+
+                <!-- Username -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Username</label>
+                    <input type="text" name="username" value="{{ auth.user.username }}" 
+                      class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">
+                </div>
+                
+                <!-- Location -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Location</label>
+                    <input type="text" name="location" value="{{ auth.user.location }}" 
+                      class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded-full hover:bg-gray-200 transition">
+                    Save changes
+                </button>
+            </div>
+        </form>
     </div>
-@endif
-
-<!-- Pop-up de modification -->
-<div id="profile-settings" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
-  <div class="bg-gray-900 text-white p-6 rounded-lg w-full max-w-lg relative">
-    <button onclick="toggleProfileSettings()" class="absolute top-3 right-4 text-2xl text-white">&times;</button>
-
-    <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data">
-      {{ csrfField() }}
-      {{-- <input type="hidden" name="_csrf" value="{{ csrfToken }}"> --}}
-
-      <div class="mb-4">
-        <label class="block text-sm">Nom</label>
-        <input type="text" name="firstname" value="{{ auth.user.firstname }}" class="w-full bg-gray-800 p-2 rounded" />
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm">Bio</label>
-        <textarea name="bio" class="w-full bg-gray-800 p-2 rounded">{{ auth.user.bio }}</textarea>
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm">Nom d'utilisateur</label>
-        <input type="text" name="username" value="{{ auth.user.username }}" class="w-full bg-gray-800 p-2 rounded" />
-      </div>
-      
-      <div class="mb-4">
-        <label class="block text-sm">Localisation</label>
-        <input type="text" name="location" value="{{ auth.user.location }}" class="w-full bg-gray-800 p-2 rounded" />
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm">Photo de profil</label>
-        <input type="file" name="profile_picture" class="text-white" />
-      </div>
-
-      <div class="mb-4">
-        <label class="block text-sm">Bannière</label>
-        <input type="file" name="banner" class="text-white" />
-      </div>
-
-      <button type="submit" class="bg-blue-600 px-4 py-2 rounded text-white">Enregistrer</button>
-    </form>
-  </div>
 </div>
 
 <script>
   function toggleProfileSettings() {
-    document.getElementById('profile-settings').classList.toggle('hidden')
+      document.getElementById('profile-settings').classList.toggle('hidden');
   }
+
+  // Preview image when selected
+  document.getElementById('profile_picture').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function() {
+          document.getElementById('profile-pic-preview-img').src = reader.result;
+      }
+      reader.readAsDataURL(e.target.files[0]);
+  });
+
+  document.getElementById('banner').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function() {
+          document.getElementById('banner-preview-img').src = reader.result;
+      }
+      reader.readAsDataURL(e.target.files[0]);
+  });
 </script>

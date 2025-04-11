@@ -1,0 +1,75 @@
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    .file-input-label {
+        display: inline-block;
+        padding: 8px 16px;
+        border-radius: 9999px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .file-input-label:hover {
+        background-color: rgba(29, 155, 240, 0.1);
+    }
+    .file-input {
+        display: none;
+    }
+    
+    .profile-pic-preview, .banner-preview {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+    }
+    
+    .profile-pic-preview {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+    }
+    
+    .banner-preview {
+        height: 200px;
+        background-color: #1d9bf0;
+    }
+    
+    .edit-overlay {
+        position: absolute;
+        inset: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.2s;
+    }
+    
+    .profile-pic-preview:hover .edit-overlay,
+    .banner-preview:hover .edit-overlay {
+        opacity: 1;
+    }
+    
+    .input-field {
+        transition: border-color 0.2s;
+    }
+    
+    .input-field:focus {
+        border-color: #1d9bf0;
+        box-shadow: 0 0 0 1px #1d9bf0;
+    }
+    .flash-message {
+        animation: slideIn 0.3s ease-out, fadeOut 0.5s ease 3s forwards;
+    }
+    
+    @keyframes slideIn {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+    
+    @keyframes fadeOut {
+        from { opacity: 1; }
+        to { opacity: 0; }
+    }

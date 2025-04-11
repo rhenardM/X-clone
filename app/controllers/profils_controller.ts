@@ -88,8 +88,15 @@ export default class ProfilesController {
     
         await user.save()
         console.log('User updated:', user)
+
+
         // Redirect to the profile page with a success message
-        session.put('success', 'Profile updated successfully')
+    session.put('success', 'Profile updated successfully')
+        // Supprimer le flash message après 2 secondes
+        setTimeout(() => {
+        session.forget('success')
+        }, 2000)
+
         return response.redirect().back()
     }
 }
