@@ -1,5 +1,8 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import Tweet from '#models/tweet'
+import app from '@adonisjs/core/services/app'
+
+
 
 export default class ProfilesController {
     public async show({ view, auth, response }: HttpContext) {
@@ -42,5 +45,58 @@ export default class ProfilesController {
         .then((result) => result[0].$extras.count)
 
         return view.render('pages/profil', { user, tweets, tweetCount })
+    }
+
+    public async updateProfile({ request, auth, response, session }: HttpContext) {
+        const user = auth.user!
+    
+        const firstname = request.input('firstname')
+        const bio = request.input('bio')
+        const location = request.input('location')
+        const username = request.input('username')
+
+        console.log('Bio :', bio)
+        console.log('Firstname :', firstname)
+    
+        const profile_picture = request.file('profile_picture')
+        const banner = request.file('banner')
+        console.log('Username :', username)
+        console.log('Location :', location)
+        console.log('Profile picture :', profile_picture)
+        console.log('Banner :', banner)
+    
+        user.firstname = firstname
+        user.bio = bio
+        user.location = location
+        user.username = username
+    
+        if (profile_picture) {
+            const avatarName = `${new Date().getTime()}-${profile_picture.clientName}`
+            await profile_picture.move(app.publicPath('uploads'), { name: avatarName })
+            user.profile_picture = `/uploads/${avatarName}`, 
+            
+            console.log('Profile picture moved to:', user.profile_picture)
+        }
+
+        if (banner) {
+            const bannerName = `${new Date().getTime()}-${banner.clientName}`
+            await banner.move(app.publicPath('uploads'), { name: bannerName })
+            user.banner = `/uploads/${bannerName}`
+            console.log('Banner moved to:', user.banner)
+        }
+
+    
+        await user.save()
+        console.log('User updated:', user)
+
+
+        // Redirect to the profile page with a success message
+    session.put('success', 'Profile updated successfully')
+        // Supprimer le flash message après 2 secondes
+        setTimeout(() => {
+        session.forget('success')
+        }, 2000)
+
+        return response.redirect().back()
     }
 }

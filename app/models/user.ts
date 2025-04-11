@@ -47,7 +47,7 @@ export default class User extends compose (BaseModel, AuthFinder) {
   declare profile_picture: string | null
 
   @column()
-  declare banner?: string
+  declare banner: string | null
 
   @column()
   declare roleId: number 
