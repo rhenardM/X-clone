@@ -20,7 +20,9 @@ const CommentsController = () => import('#controllers/comments_controller')
 const RetweetsController = () => import('#controllers/retweets_controller')
 
 router.get('/', [TweetsController, 'index']).as('home').use(middleware.auth())
-router.get('/profil', [ProfilesController, 'show']).as('profil')
+
+// profil route
+router.get('/profil', [ProfilesController, 'show']).as('profil').use(middleware.auth())
 
 // register route
 router.get('/register', [UsersController, 'registerPage']).as('register.page')
