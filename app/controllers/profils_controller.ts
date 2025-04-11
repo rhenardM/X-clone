@@ -44,59 +44,82 @@ export default class ProfilesController {
         .count('* as count')
         .then((result) => result[0].$extras.count)
 
-        return view.render('pages/profil', { user, tweets, tweetCount })
+        const followersCount = await user.related('followers').query().count('* as count');
+        const followingCount = await user.related('following').query().count('* as count');
+        
+        // Fournir une valeur par défaut si le tableau est vide
+        const followersCountValue = followersCount[0]?.$extras?.count || 0;
+        const followingCountValue = followingCount[0]?.$extras?.count || 0;
+
+        return view.render('pages/profil', { 
+            user, 
+            tweets, 
+            tweetCount, 
+            followersCount: followersCountValue,
+            followingCount: followingCountValue,
+        })
     }
 
     public async updateProfile({ request, auth, response, session }: HttpContext) {
-        const user = auth.user!
+        try {
+            const user = auth.user!
     
-        const firstname = request.input('firstname')
-        const bio = request.input('bio')
-        const location = request.input('location')
-        const username = request.input('username')
-
-        console.log('Bio :', bio)
-        console.log('Firstname :', firstname)
+            const firstname = request.input('firstname')
+            const bio = request.input('bio')
+            const location = request.input('location')
+            const username = request.input('username')
     
-        const profile_picture = request.file('profile_picture')
-        const banner = request.file('banner')
-        console.log('Username :', username)
-        console.log('Location :', location)
-        console.log('Profile picture :', profile_picture)
-        console.log('Banner :', banner)
+            console.log('Bio :', bio)
+            console.log('Firstname :', firstname)
+        
+            const profile_picture = request.file('profile_picture')
+            const banner = request.file('banner')
+            console.log('Username :', username)
+            console.log('Location :', location)
+            console.log('Profile picture :', profile_picture)
+            console.log('Banner :', banner)
+        
+            user.firstname = firstname
+            user.bio = bio
+            user.location = location
+            user.username = username
+        
+            // Validate the files profile_picture
+            if (profile_picture) {
+                const avatarName = `${new Date().getTime()}-${profile_picture.clientName}`
+                await profile_picture.move(app.publicPath('uploads'), { name: avatarName })
+                user.profile_picture = `/uploads/${avatarName}`, 
+                
+                console.log('Profile picture moved to:', user.profile_picture)
+            }
     
-        user.firstname = firstname
-        user.bio = bio
-        user.location = location
-        user.username = username
+            // Validate the files banner
+            if (banner) {
+                const bannerName = `${new Date().getTime()}-${banner.clientName}`
+                await banner.move(app.publicPath('uploads'), { name: bannerName })
+                user.banner = `/uploads/${bannerName}`
+                console.log('Banner moved to:', user.banner)
+            }
+        
+            await user.save()
+            console.log('User updated:', user)
     
-        if (profile_picture) {
-            const avatarName = `${new Date().getTime()}-${profile_picture.clientName}`
-            await profile_picture.move(app.publicPath('uploads'), { name: avatarName })
-            user.profile_picture = `/uploads/${avatarName}`, 
-            
-            console.log('Profile picture moved to:', user.profile_picture)
+            // Redirect to the profile page with a success message
+            session.put('success', 'Profile updated successfully')
+            setTimeout(() => {
+            session.forget('success')
+            }, 2000)
+    
+            return response.redirect().back()
+        } catch (error) {
+            console.error('Error updating profile:', error)
+    
+            session.put('error', 'Error updating profile')
+            setTimeout(() => {
+                session.forget('error')
+            }, 2000)
+    
+            return response.redirect().back()
         }
-
-        if (banner) {
-            const bannerName = `${new Date().getTime()}-${banner.clientName}`
-            await banner.move(app.publicPath('uploads'), { name: bannerName })
-            user.banner = `/uploads/${bannerName}`
-            console.log('Banner moved to:', user.banner)
-        }
-
-    
-        await user.save()
-        console.log('User updated:', user)
-
-
-        // Redirect to the profile page with a success message
-    session.put('success', 'Profile updated successfully')
-        // Supprimer le flash message après 2 secondes
-        setTimeout(() => {
-        session.forget('success')
-        }, 2000)
-
-        return response.redirect().back()
     }
 }

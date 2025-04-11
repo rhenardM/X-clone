@@ -88,10 +88,10 @@
   <!-- Utilisateur connecté (Masqué sur mobile) -->
   <div class="hidden md:flex items-center space-x-2 mt-2">
     <a href="/profil" class="flex items-center space-x-3 hover:bg-gray-800 p-2 rounded-full">
-      <img src="/resources/img/user3.jpg" alt="image de profil" class="w-10 h-10 rounded-full" />
+      <img src="{{ auth.user.profile_picture || 'me.jpg' }}" alt="image de profil" class="w-10 h-10 rounded-full" />
       <div>
-        <p class="text-gray-200 font-bold">Rhenard Bonkey</p>
-        <p class="text-gray-500 text-sm">@French_M</p>
+        <p class="text-gray-200 font-bold">{{auth.user.firstname}} {{auth.user.lastname}}</p>
+        <p class="text-gray-500 text-sm">{{auth.user.username}}</p>
       </div>
     </a>
   </div>

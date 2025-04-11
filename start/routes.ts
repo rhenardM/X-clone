@@ -18,6 +18,7 @@ const TweetsController = () => import('#controllers/tweets_controller')
 const LikesController = () => import('#controllers/likes_controller')
 const CommentsController = () => import('#controllers/comments_controller')
 const RetweetsController = () => import('#controllers/retweets_controller')
+const FollowsController = () => import('#controllers/follows_controller')
 
 router.get('/', [TweetsController, 'index']).as('home').use(middleware.auth())
 
@@ -48,3 +49,7 @@ router.post('/tweets/:id/comment', [CommentsController, 'createComments']).as('c
 
 // retweet route
 router.post('/retweets', [RetweetsController, 'retweetCreate']).as('retweet.create').use(middleware.auth()).as('tweets.retweet')
+
+// suggestions route
+router.get('/suggestions', [UsersController, 'suggestions']).as('users.suggestions').use(middleware.auth())
+router.post('/follow/toggle', [FollowsController, 'toggle']).as('follow.toggle').use(middleware.auth())

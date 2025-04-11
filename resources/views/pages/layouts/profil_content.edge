@@ -41,12 +41,12 @@
         <div class="flex items-center gap-4 text-gray-400 mt-2">
             <p><i class="fas fa-map-marker-alt"></i> {{user.location}}</p>
             <p><i class="far fa-calendar-alt"></i> A rejoint X en {{ user.createdAt ? user.createdAt.toFormat('LLL yyyy') : 'Date inconnue' }}</p>
-          </div>
+        </div>
 
         <!-- Statistiques -->
         <div class="flex gap-6 mt-2">
-            <p><span class="font-bold text-white">1,234</span> abonnements</p>
-            <p><span class="font-bold text-white">5,678</span> abonnés</p>
+            <p class="font-bold text-white">{{ followersCount }}<span class="text-white"></span> Followers</p>
+            <p class="font-bold text-white">{{ followingCount }}<span class=></span> Following</p>        
         </div>
     </div>
 

@@ -2,6 +2,7 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Tweet from '#models/tweet'
 import Media from '#models/media'
 import app from '@adonisjs/core/services/app'
+import User from '#models/user'
 
 
 export default class TweetsController {
@@ -16,7 +17,8 @@ export default class TweetsController {
             .preload('user')
             
             .preload('retweetFrom', (query) => {
-                query.preload('user').preload('medias')
+                query.preload('user')
+                .preload('medias')
             })
 
             .withCount('retweets') // <== important
@@ -32,18 +34,23 @@ export default class TweetsController {
             
             user.username = `@${user.username}` // Add @ to the username
             
-        const formattedTweets = tweets.map(tweet => ({
-            ...tweet.toJSON(),
-            isLikedByUser: tweet.likes.length > 0,
-            likeCount: tweet.allLikes.length, // <- count all likes
-            commentCount: tweet.comments?.length ?? 0,
-            retweetCount: tweet.$extras.retweets_count, // <- use the count from the query
-            createdAt: tweet.createdAt 
-            ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
-            : 'Date inconnue',
-        }))
+            const formattedTweets = tweets.map(tweet => ({
+                ...tweet.toJSON(),
+                isLikedByUser: tweet.likes.length > 0,
+                likeCount: tweet.allLikes.length, // <- count all likes
+                commentCount: tweet.comments?.length ?? 0,
+                retweetCount: tweet.$extras.retweets_count, // <- use the count from the query
+                createdAt: tweet.createdAt 
+                ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
+                : 'Date inconnue',
+            }))
+
+            // Get suggestions for users to follow
+            const suggestions = await User.query()
+            .whereNot('id', auth.user!.id)
+            .limit(3)
         
-            return view.render('pages/home', { tweets: formattedTweets, user: user })
+            return view.render('pages/home', { tweets: formattedTweets, user: user, suggestions })
         
         } catch (error) {
             console.error('Error fetching tweets:', error)

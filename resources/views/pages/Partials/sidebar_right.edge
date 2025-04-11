@@ -37,42 +37,65 @@
     </ul>
     <a href="#" class="text-primary text-sm hover:underline mt-4 block">Voir plus</a>
   </div>
-
-  <!-- Section Suggestions d'utilisateurs -->
-  <div class="bg-transparent border border-gray-700 text-gray-200 rounded-2xl shadow p-6">
-    <h2 class="text-lg font-bold mb-4">Suggestions pour vous</h2>
-    <ul class="space-y-4">
+<!-- Section Suggestions d'utilisateurs -->
+<div class="bg-transparent border border-gray-700 text-gray-200 rounded-2xl shadow p-6">
+  <h2 class="text-lg font-bold mb-4">Suggestions pour vous</h2>
+  <ul class="space-y-4">
+    @each(user in suggestions)
       <li class="flex items-center space-x-3">
-        <img src="/resources/img/user3.jpg" alt="Avatar" class="w-12 h-12 rounded-full" />
+        <img src="{{ auth.user.profile_picture || '/resources/img/me.jpg' }}" alt="Avatar" class="w-12 h-12 rounded-full" />
         <div>
-          <p class="font-bold text-gray-200">Exousia Nzola </p>
-          <p class="text-sm text-gray-500">@exousia_M</p>
+          <p class="font-bold text-gray-200">{{ user.firstname }} {{user.lastname}}</p>
+          <p class="text-sm text-gray-500">{{ user.username }}</p>
         </div>
-        <button class="ml-auto bg-white text-black text-sm px-4 py-1 rounded-full hover:bg-gray-200">
-          Suivre
-        </button>
+        <form method="POST" action="{{ route('follow.toggle') }}" class="follow-form" data-user-id="{{ user.id }}">
+          {{ csrfField() }}
+          <input type="hidden" name="user_id" value="{{ user.id }}" />
+          <button class="ml-auto bg-white text-black text-sm px-4 py-1 rounded-full hover:bg-gray-200">
+            <span class="text-black bold" id="follow-text-{{ user.id }}" data-is-followed-by-auth-user="{{ user.isFollowedByAuthUser ? 'true' : 'false' }}">
+              {{ user.isFollowedByAuthUser ? 'Unfollow' : 'Follow' }}
+            </span>
+          </button>
+        </form>
       </li>
-      <li class="flex items-center space-x-3">
-        <img src="/resources/img/user1.jpg" alt="Avatar" class="w-12 h-12 rounded-full" />
-        <div>
-          <p class="font-bold text-gray-200">Inaya Munongo</p>
-          <p class="text-sm text-gray-500">@inaya_M</p>
-        </div>
-        <button class="ml-auto bg-white text-black text-sm px-4 py-1 rounded-full hover:bg-gray-200">
-          Suivre
-        </button>
-      </li>
-      <li class="flex items-center space-x-3">
-        <img src="/resources/img/user2.jpg" alt="Avatar" class="w-12 h-12 rounded-full" />
-        <div>
-          <p class="font-bold text-gray-200">Inaya Munongo</p>
-          <p class="text-sm text-gray-500">@Tri_Ndunga</p>
-        </div>
-        <button class="ml-auto bg-white text-black text-sm px-4 py-1 rounded-full hover:bg-gray-200">
-          Suivre
-        </button>
-      </li>
-    </ul>
-    <a href="#" class="text-primary text-sm hover:underline mt-4 block">Voir plus</a>
-  </div>
+    @endeach
+  </ul>
+  <a href="#" class="text-primary text-sm hover:underline mt-4 block">Voir plus</a>
 </div>
+  <!-- Section Liens utiles -->
+</div>
+
+<script>document.querySelectorAll('.follow-form').forEach(form => {
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault()
+
+    const userId = form.dataset.userId
+    const token = form.querySelector('input[name="_csrf"]').value
+    const span = document.getElementById(`follow-text-${userId}`)
+
+    try {
+      const res = await fetch(form.action, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': token,
+        },
+        body: JSON.stringify({ user_id: userId }),
+      })
+    
+      const data = await res.json()
+    
+      if (data.followed) {
+        span.textContent = 'Unfollow'
+        span.dataset.isFollowedByAuthUser = data.isFollowedByAuthUser
+      } else {
+        span.textContent = 'Follow'
+        span.dataset.isFollowedByAuthUser = data.isFollowedByAuthUser
+      }
+    } catch (err) {
+      console.error('Erreur lors du follow/unfollow', error)
+    }
+  })
+})
+</script>
+

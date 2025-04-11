@@ -1,6 +1,7 @@
 import type { HttpContext } from '@adonisjs/core/http'
 import { RegisterUserValidator } from '#validators/register_user';
 import User from '#models/user';
+import Follow from '#models/follow';
 
 export default class UsersController {
 
@@ -77,6 +78,34 @@ export default class UsersController {
         await auth.use('web').logout()
         session.flash('success', 'Logout successful')
         return response.redirect().toRoute('login.page')
+    }
+
+    // Suggestion: You can create a method to handle the flash messages in a more generic way
+
+    public async suggestions({ auth }: HttpContext) {
+        const currentUser = auth.user!
+        
+        const followingIds = await currentUser
+        .related('following')
+        .query()
+        .select('following_id')
+        
+        const followingIdList = followingIds.map(f => f.followingId)
+        
+        const suggestions = await User.query()
+        .whereNotIn('id', [currentUser.id, ...followingIdList])
+        .limit(3) // Limit the number of suggestions to 3
+
+        for (const user of suggestions) {
+            const follow = await Follow.query()
+              .where('followerId', auth.user!.id)
+              .andWhere('followingId', user.id)
+              .first()
+              
+            user.isFollowedByAuthUser = !!follow
+          }
+        
+        return suggestions
     }
     
 }

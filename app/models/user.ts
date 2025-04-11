@@ -51,6 +51,11 @@ export default class User extends compose (BaseModel, AuthFinder) {
 
   @column()
   declare roleId: number 
+
+  //
+  @column()
+  declare isFollowedByAuthUser: boolean
+
   // This is the foreign key for the relation to the Role model
   @belongsTo(() => Role)
   declare role: BelongsTo<typeof Role> // Relation to Role model
@@ -64,14 +69,20 @@ export default class User extends compose (BaseModel, AuthFinder) {
   // This is the foreign key for the relation to the Comment model 
   @hasMany(() => Comment)
   declare comments: HasMany<typeof Comment>// Relation to Comment model
+  
+  // This is the foreign key for the relation to the Like model
+  @hasMany(() => Follow, {
+    foreignKey: 'followingId', // Clé étrangère pour les followers (dans la table follows, c'est "following_id")
+    localKey: 'id', // Correspond à "id" dans la table users
+  })
+  declare followers: HasMany<typeof Follow>
+  
 
-  // This is the foreign key for the relation to the follow model
-  @hasMany(() => Follow)
-  declare followers: HasMany<typeof Follow> // Relation to Follow model
-
-  // This is the foreign key for the relation to the follow model
-  @hasMany(() => Follow)
-  declare following: HasMany<typeof Follow> // Relation to Follow model
+  @hasMany(() => Follow, {
+    foreignKey: 'followerId', // Clé étrangère pour les following (dans la table follows, c'est "follower_id")
+    localKey: 'id', // Correspond à "id" dans la table users
+  })
+  declare following: HasMany<typeof Follow>
 
   // This is the foreign key for the relation to the retweet model
   @hasMany(() => Retweet)

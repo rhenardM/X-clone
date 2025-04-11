@@ -4,14 +4,13 @@
   <!-- Si retweet -->
   @if(tweet.retweetFrom)
     <div class="text-gray-400 text-sm mb-4 flex items-center space-x-1">
-      <img src="{{ (tweet.retweetFrom ? tweet.retweetFrom.user?.avatar : tweet.user?.avatar) || '/default-avatar.png' }}" class="w-12 h-12 rounded-full object-cover">
+      <img src="{{ tweet.retweetFrom && tweet.retweetFrom.user ? tweet.retweetFrom.user.profile_picture : (tweet.user ? tweet.user.profile_picture : '/default-avatar.png') }}" class="w-12 h-12 rounded-full object-cover">      
       <span>Retweeté par {{ tweet.user.username }}</span>
     </div>
   @endif
 
   <div class="flex items-start gap-4" id="tweet-{{ tweet.id }}">
-    <img src="{{ (tweet.retweetFrom ? tweet.retweetFrom.user?.avatar : tweet.user?.avatar) || '/default-avatar.png' }}" class="w-12 h-12 rounded-full object-cover">
-
+    <img src="{{ tweet.retweetFrom && tweet.retweetFrom.user ? tweet.retweetFrom.user.profile_picture : (tweet.user ? tweet.user.profile_picture : '/default-avatar.png') }}" class="w-12 h-12 rounded-full object-cover">    
     <div class="flex-1">
       <div class="flex justify-between items-start gap-2 flex-wrap">
         <div class="text-sm md:text-base">
@@ -243,7 +242,7 @@
           <div class="bg-gray-800 p-4 rounded-lg shadow-md">
             <div class="flex items-start space-x-3">
               <!-- Avatar de l'utilisateur -->
-              <img src="${comment.user.avatar || '/default-avatar.png'}" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
+              <img src="${comment.user.profile_picture || '/ressources/img/me.png'}" alt="Avatar" class="w-10 h-10 rounded-full object-cover">
               
               <!-- Contenu du commentaire -->
               <div class="flex-1">
