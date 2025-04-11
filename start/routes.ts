@@ -23,6 +23,7 @@ router.get('/', [TweetsController, 'index']).as('home').use(middleware.auth())
 
 // profil route
 router.get('/profil', [ProfilesController, 'show']).as('profil').use(middleware.auth())
+router.post('/profil/update', [ProfilesController, 'updateProfile']).as('profil.update').use(middleware.auth())
 
 // register route
 router.get('/register', [UsersController, 'registerPage']).as('register.page')

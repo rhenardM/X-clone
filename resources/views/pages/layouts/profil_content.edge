@@ -1,14 +1,15 @@
 <section class="w-full max-w-2xl mx-auto text-white">
     <!-- Bannière -->
     <div class="relative h-52 bg-gray-800">
-        <img src="resources/img/user3.jpg" alt="Bannière" class="w-full h-full object-cover">
+        <img src="{{ auth.user.banner }}" alt="Bannière" class="w-full h-full object-cover">
         
         <!-- Photo de profil -->
         <div class="flex items-center gap-4 mt-4 px-4 relative">
             <div class="absolute -bottom-12 left-4 border-4 border-black rounded-full">
-                <img src="resources/img/user3.jpg" alt="Avatar" class="w-24 h-24 rounded-full object-cover">
+                <img src="{{ auth.user.profile_picture || 'me.jpg' }}" alt="Avatar" class="w-24 h-24 rounded-full object-cover">
             </div>
-            <button class="ml-auto border font-semibold border-gray-600 px-4 py-1 rounded-full text-white hover:bg-gray-700 transition">
+            <button class="ml-auto border font-semibold border-gray-600 px-4 py-1 rounded-full text-white hover:bg-gray-700 transition"
+            onclick="toggleProfileSettings()">
                 Configurer le profil
             </button>
         </div>
@@ -117,3 +118,63 @@
     </div>
 @endeach
   </section>
+{{-- 
+  <!-- Bouton Config -->
+<button onclick="toggleProfileSettings()" class="mt-2 px-4 py-1 bg-blue-500 rounded text-white">Configurer le profil</button> --}}
+
+<!-- message flash -->
+@if(session.get('success'))
+    <div class="bg-green-500 text-white p-4 rounded-lg mb-4">
+        {{ session.get('success') }}
+    </div>
+@endif
+
+<!-- Pop-up de modification -->
+<div id="profile-settings" class="hidden fixed inset-0 bg-black bg-opacity-70 z-50 flex justify-center items-center">
+  <div class="bg-gray-900 text-white p-6 rounded-lg w-full max-w-lg relative">
+    <button onclick="toggleProfileSettings()" class="absolute top-3 right-4 text-2xl text-white">&times;</button>
+
+    <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data">
+      {{ csrfField() }}
+      {{-- <input type="hidden" name="_csrf" value="{{ csrfToken }}"> --}}
+
+      <div class="mb-4">
+        <label class="block text-sm">Nom</label>
+        <input type="text" name="firstname" value="{{ auth.user.firstname }}" class="w-full bg-gray-800 p-2 rounded" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm">Bio</label>
+        <textarea name="bio" class="w-full bg-gray-800 p-2 rounded">{{ auth.user.bio }}</textarea>
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm">Nom d'utilisateur</label>
+        <input type="text" name="username" value="{{ auth.user.username }}" class="w-full bg-gray-800 p-2 rounded" />
+      </div>
+      
+      <div class="mb-4">
+        <label class="block text-sm">Localisation</label>
+        <input type="text" name="location" value="{{ auth.user.location }}" class="w-full bg-gray-800 p-2 rounded" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm">Photo de profil</label>
+        <input type="file" name="profile_picture" class="text-white" />
+      </div>
+
+      <div class="mb-4">
+        <label class="block text-sm">Bannière</label>
+        <input type="file" name="banner" class="text-white" />
+      </div>
+
+      <button type="submit" class="bg-blue-600 px-4 py-2 rounded text-white">Enregistrer</button>
+    </form>
+  </div>
+</div>
+
+<script>
+  function toggleProfileSettings() {
+    document.getElementById('profile-settings').classList.toggle('hidden')
+  }
+</script>
