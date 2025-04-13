@@ -1,79 +1,97 @@
-<div class="h-screen w-96 bg-black text-gray-200 fixed right-0 top-0 border-l border-gray-700 p-6 space-y-6">
+<div class="h-screen bg-black text-gray-200 right-0 top-0 border-l border-gray-700 hidden lg:block w-full lg:w-80 xl:w-96 p-4 lg:p-6 space-y-6 overflow-y-auto">  
   <!-- Barre de recherche -->
-  <div class="bg-black border border-gray-700 rounded-full shadow flex items-center px-4 py-2">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
+  <div class="bg-gray-900 rounded-full flex items-center px-4 py-3">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">  
       <circle cx="10" cy="10" r="7" />  
       <line x1="16" y1="16" x2="21" y2="21" stroke-width="2" />  
     </svg>
     <input
       type="text"
       placeholder="Rechercher"
-      class="ml-3 flex-1 bg-transparent focus:outline-none text-gray-700"
+      class="ml-3 flex-1 bg-transparent focus:outline-none text-white placeholder-gray-500"
     />
   </div>
 
   <!-- Section Tendances -->
-  <div class="bg-transparent border border-gray-700 text-gray-200 rounded-2xl shadow p-6">
-    <h2 class="text-lg font-bold mb-4">Tendances pour vous</h2>
-    <ul class="space-y-4">
-      <li>
-        <a href="#" class="block text-gray-200 hover:text-primary">
+  <div class="bg-gray-900 text-gray-200 rounded-2xl">
+    <h2 class="text-xl font-bold p-4">Tendances pour vous</h2>
+    <ul class="divide-y divide-gray-700">
+      <li class="p-4 hover:bg-gray-800 cursor-pointer transition">
+        <a href="#" class="block">
           <p class="text-sm text-gray-500">#Technologie</p>
-          <p class="font-bold">AdonisJS en plein essor</p>
+          <p class="font-bold text-white">AdonisJS en plein essor</p>
+          <p class="text-sm text-gray-500">2,5 k posts</p>
         </a>
       </li>
-      <li>
-        <a href="#" class="block text-gray-200 hover:text-primary">
+      <li class="p-4 hover:bg-gray-800 cursor-pointer transition">
+        <a href="#" class="block">
           <p class="text-sm text-gray-500">#Sport</p>
-          <p class="font-bold">La finale de la Coupe du Monde</p>
+          <p class="font-bold text-white">La finale de la Coupe du Monde</p>
+          <p class="text-sm text-gray-500">15,2 k posts</p>
         </a>
       </li>
-      <li>
-        <a href="#" class="block text-gray-200 hover:text-primary">
+      <li class="p-4 hover:bg-gray-800 cursor-pointer transition">
+        <a href="#" class="block">
           <p class="text-sm text-gray-500">#Musique</p>
-          <p class="font-bold">Nouvel album de l'artiste X</p>
+          <p class="font-bold text-white">Nouvel album de l'artiste X</p>
+          <p class="text-sm text-gray-500">8,7 k posts</p>
         </a>
       </li>
     </ul>
-    <a href="#" class="text-primary text-sm hover:underline mt-4 block">Voir plus</a>
+    <a href="#" class="text-blue-500 text-sm hover:underline p-4 block">Voir plus</a>
   </div>
-<!-- Section Suggestions d'utilisateurs -->
-<div class="bg-transparent border border-gray-700 text-gray-200 rounded-2xl shadow p-6">
-  <h2 class="text-lg font-bold mb-4">Suggestions pour vous</h2>
-  <ul class="space-y-4">
-    @each(user in suggestions)
-      <li class="flex items-center space-x-3">
-        <img src="{{ auth.user.profile_picture || '/resources/img/me.jpg' }}" alt="Avatar" class="w-12 h-12 rounded-full" />
-        <div>
-          <p class="font-bold text-gray-200">{{ user.firstname }} {{user.lastname}}</p>
-          <p class="text-sm text-gray-500">{{ user.username }}</p>
-        </div>
-        <form method="POST" action="{{ route('follow.toggle') }}" class="follow-form" data-user-id="{{ user.id }}">
-          {{ csrfField() }}
-          <input type="hidden" name="user_id" value="{{ user.id }}" />
-          <button class="ml-auto bg-white text-black text-sm px-4 py-1 rounded-full hover:bg-gray-200">
-            <span class="text-black bold" id="follow-text-{{ user.id }}" data-is-followed-by-auth-user="{{ user.isFollowedByAuthUser ? 'true' : 'false' }}">
-              {{ user.isFollowedByAuthUser ? 'Unfollow' : 'Follow' }}
-            </span>
-          </button>
-        </form>
-      </li>
-    @endeach
-  </ul>
-  <a href="#" class="text-primary text-sm hover:underline mt-4 block">Voir plus</a>
-</div>
-  <!-- Section Liens utiles -->
+
+  <!-- Section Suggestions d'utilisateurs -->
+  <div class="bg-gray-900 text-gray-200 rounded-2xl">
+    <h2 class="text-xl font-bold p-4">Suggestions pour vous</h2>
+    <ul class="divide-y divide-gray-700">
+      @each(user in suggestions)
+        <li class="p-4 hover:bg-gray-800 cursor-pointer transition flex items-center">
+          <img src="{{ user.profile_picture || '/resources/img/me.jpeg' }}" alt="Avatar" class="w-10 h-10 rounded-full" />
+          <div class="ml-3 flex-1 min-w-0">
+            <p class="font-bold text-white truncate">{{ user.firstname }} {{user.lastname}}</p>
+            <p class="text-sm text-gray-500 truncate">{{ user.username }}</p>
+          </div>
+          <form method="POST" action="{{ route('follow.toggle') }}" class="follow-form" data-user-id="{{ user.id }}">
+            {{ csrfField() }}
+            <input type="hidden" name="user_id" value="{{ user.id }}" />
+            <button class="ml-2 bg-white text-black text-sm px-3 py-1 rounded-full hover:bg-gray-200 transition">
+              <span class="font-medium" id="follow-text-{{ user.id }}" data-is-followed-by-auth-user="{{ user.isFollowedByAuthUser ? 'true' : 'false' }}">
+                {{ user.isFollowedByAuthUser ? 'Following' : 'Follow' }}
+              </span>
+            </button>
+          </form>
+        </li>
+      @endeach
+    </ul>
+    <a href="#" class="text-blue-500 text-sm hover:underline p-4 block">Voir plus</a>
+  </div>
+
+  <!-- Footer Links -->
+  <div class="text-gray-500 text-xs p-4">
+    <div class="flex flex-wrap gap-2">
+      <a href="#" class="hover:underline">Conditions</a>
+      <a href="#" class="hover:underline">Politique de confidentialité</a>
+      <a href="#" class="hover:underline">Cookies</a>
+      <a href="#" class="hover:underline">Accessibilité</a>
+      <a href="#" class="hover:underline">Informations sur les publicités</a>
+    </div>
+    <p class="mt-2">© 2023 X Clone</p>
+  </div>
 </div>
 
-<script>document.querySelectorAll('.follow-form').forEach(form => {
+<script>
+document.querySelectorAll('.follow-form').forEach(form => {
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
 
     const userId = form.dataset.userId
     const token = form.querySelector('input[name="_csrf"]').value
     const span = document.getElementById(`follow-text-${userId}`)
+    const button = form.querySelector('button')
 
     try {
+      button.disabled = true
       const res = await fetch(form.action, {
         method: 'POST',
         headers: {
@@ -86,16 +104,20 @@
       const data = await res.json()
     
       if (data.followed) {
-        span.textContent = 'Unfollow'
-        span.dataset.isFollowedByAuthUser = data.isFollowedByAuthUser
+        span.textContent = 'Following'
+        button.classList.remove('bg-white')
+        button.classList.add('bg-gray-200')
       } else {
         span.textContent = 'Follow'
-        span.dataset.isFollowedByAuthUser = data.isFollowedByAuthUser
+        button.classList.remove('bg-gray-200')
+        button.classList.add('bg-white')
       }
+      span.dataset.isFollowedByAuthUser = data.isFollowedByAuthUser
     } catch (err) {
-      console.error('Erreur lors du follow/unfollow', error)
+      console.error('Erreur lors du follow/unfollow', err)
+    } finally {
+      button.disabled = false
     }
   })
 })
 </script>
-

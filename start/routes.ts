@@ -9,6 +9,7 @@
 
 import router from '@adonisjs/core/services/router'
 import { middleware } from './kernel.js'
+import HomePagesController from '#controllers/home_controller'
 
 // Importing the controllers
 // const HomeController = () => import('#controllers/home_controller')
@@ -20,7 +21,7 @@ const CommentsController = () => import('#controllers/comments_controller')
 const RetweetsController = () => import('#controllers/retweets_controller')
 const FollowsController = () => import('#controllers/follows_controller')
 
-router.get('/', [TweetsController, 'index']).as('home').use(middleware.auth())
+router.get('/', [HomePagesController, 'vues']).as('home').use(middleware.auth())
 
 // profil route
 router.get('/profil', [ProfilesController, 'show']).as('profil').use(middleware.auth())

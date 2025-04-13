@@ -2,61 +2,67 @@ import type { HttpContext } from '@adonisjs/core/http'
 import Tweet from '#models/tweet'
 import Media from '#models/media'
 import app from '@adonisjs/core/services/app'
-import User from '#models/user'
+// import User from '#models/user'
 
 
 export default class TweetsController {
 
     /**
      * Show tweets on the homepage
-     */
-    public async index({ view, auth }: HttpContext) {
-        try {
-            const user = auth.user!
-            const tweets = await Tweet.query()
-            .preload('user')
+    //  */
+    // public async index({ view, auth }: HttpContext) {
+    //     try {
+    //         const user = auth.user!
+
+    //         const tweets = await Tweet.query()
+    //         .preload('user')
+    //         .preload('retweetFrom', (query) => {
+    //             query.preload('user')
+    //             .preload('medias')
+    //         })
+
+    //         .withCount('retweets') // <== important
+
+    //         .preload('medias')
+
+    //         .preload('likes', (likesQuery) => {
+    //             likesQuery.where('user_id', auth.user!.id)
+    //         })
+    //         .preload('comments', (query) => query.preload('user')) // Preload the user for each comment
+    //         .preload('allLikes') // <- the relation to get all likes
+    //         .orderBy('createdAt', 'desc')
             
-            .preload('retweetFrom', (query) => {
-                query.preload('user')
-                .preload('medias')
-            })
+    //         console.log(tweets.map(tweet => ({
+    //             user: tweet.user,
+    //             retweetFromUser: tweet.retweetFrom?.user,
+    //             medias: tweet.medias,
+    //         })));
 
-            .withCount('retweets') // <== important
-
-            .preload('medias')
-
-            .preload('likes', (likesQuery) => {
-                likesQuery.where('user_id', auth.user!.id)
-            })
-            .preload('comments', (query) => query.preload('user')) // Preload the user for each comment
-            .preload('allLikes') // <- the relation to get all likes
-            .orderBy('createdAt', 'desc')
+    //         user.username = `@${user.username}` // Add @ to the username
             
-            user.username = `@${user.username}` // Add @ to the username
-            
-            const formattedTweets = tweets.map(tweet => ({
-                ...tweet.toJSON(),
-                isLikedByUser: tweet.likes.length > 0,
-                likeCount: tweet.allLikes.length, // <- count all likes
-                commentCount: tweet.comments?.length ?? 0,
-                retweetCount: tweet.$extras.retweets_count, // <- use the count from the query
-                createdAt: tweet.createdAt 
-                ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
-                : 'Date inconnue',
-            }))
+    //         const formattedTweets = tweets.map(tweet => ({
+    //             ...tweet.toJSON(),
+    //             isLikedByUser: tweet.likes.length > 0,
+    //             likeCount: tweet.allLikes.length, // <- count all likes
+    //             commentCount: tweet.comments?.length ?? 0,
+    //             retweetCount: tweet.$extras.retweets_count, // <- use the count from the query
+    //             createdAt: tweet.createdAt 
+    //             ? tweet.createdAt.toFormat('dd LLL yyyy HH : mm ') 
+    //             : 'Date inconnue',
+    //         }))
 
-            // Get suggestions for users to follow
-            const suggestions = await User.query()
-            .whereNot('id', auth.user!.id)
-            .limit(3)
+    //         // Get suggestions for users to follow
+    //         const suggestions = await User.query()
+    //         .whereNot('id', auth.user!.id)
+    //         .limit(3)
         
-            return view.render('pages/home', { tweets: formattedTweets, user: user, suggestions })
+    //         return view.render('pages/home', { tweets: formattedTweets, user: user, suggestions })
         
-        } catch (error) {
-            console.error('Error fetching tweets:', error)
-            return view.render('pages/home', { tweets: [] })
-        }
-    }
+    //     } catch (error) {
+    //         console.error('Error fetching tweets:', error)
+    //         return view.render('pages/home', { tweets: [] })
+    //     }
+    // }
 
     /**
      * Creation of the tweet
@@ -98,7 +104,7 @@ export default class TweetsController {
                     continue
                 }
 
-                // Définission du chemin d'upload
+                // Defining the upload path
                 const fileName = `${new Date().getTime()}-${mediaFile.clientName}`
                 
                 const uploadDir =  app.publicPath('uploads') // Path to the public/uploads folder
@@ -112,7 +118,7 @@ export default class TweetsController {
                 await Media.create({
                     tweetId: tweet.id,
                     url: `/uploads/${fileName}`, // URL publique du média
-                    type: mediaFile.type, // Type type (image, video, etc.)
+                    type: mediaFile.type, // Type media (image, video, etc.)
                 })
                 console.log('Type du fichier média:', mediaFile.type)
                 console.log('Fichier média enregistré:', fileName)

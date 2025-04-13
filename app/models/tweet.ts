@@ -21,7 +21,7 @@ export default class Tweet extends BaseModel {
   declare userId: number
 
   @column()
-  declare retweetFromId: number
+  declare retweetFromId: number | null
 
   @belongsTo(() => User)
   declare user: BelongsTo<typeof User> // Relation to User model
@@ -48,8 +48,7 @@ export default class Tweet extends BaseModel {
   @belongsTo(() => Tweet, { foreignKey: 'retweetFromId' })
   declare retweetFrom: BelongsTo<typeof Tweet>
   
-
-  //
+  // 
   @manyToMany(() => Hashtag, {
     pivotTable: 'tweets_hashtags',
   })

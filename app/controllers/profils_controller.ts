@@ -85,14 +85,23 @@ export default class ProfilesController {
             user.username = username
         
             // Validate the files profile_picture
+            // if (profile_picture) {
+            //     const avatarName = `${new Date().getTime()}-${profile_picture.clientName}`
+            //     await profile_picture.move(app.publicPath('uploads'), { name: avatarName })
+            //     user.profile_picture = `/uploads/${avatarName}`, 
+                
+            //     console.log('Profile picture moved to:', user.profile_picture)
+            // }
             if (profile_picture) {
                 const avatarName = `${new Date().getTime()}-${profile_picture.clientName}`
-                await profile_picture.move(app.publicPath('uploads'), { name: avatarName })
-                user.profile_picture = `/uploads/${avatarName}`, 
-                
-                console.log('Profile picture moved to:', user.profile_picture)
+                await profile_picture.move(app.publicPath('uploads'), { 
+                    name: avatarName,
+                    overwrite: true
+                })
+                user.profile_picture = `uploads/${avatarName}`
+                console.log('Profile picture path:', user.profile_picture)
             }
-    
+
             // Validate the files banner
             if (banner) {
                 const bannerName = `${new Date().getTime()}-${banner.clientName}`

@@ -61,7 +61,7 @@
                 <div class="mt-16">
                     <h2 class="text-xl font-bold mb-4">Already have an account?</h2>
                     <button class="w-full py-3 rounded-full signin-btn text-sm">
-                        Sign in
+                        <a href="/login" class="text-blue-400 hover:underline">Log in</a>
                     </button>
                 </div>
             </div>
@@ -282,6 +282,12 @@
                                     name="username"
                                     class="w-full py-3 px-4 rounded-md input-field text-white placeholder-gray-500">
                             </div>
+
+                            <div>
+                                <input type="text" placeholder="Phone" 
+                                    name="number"
+                                    class="w-full py-3 px-4 rounded-md input-field text-white placeholder-gray-500">
+                            </div>
                             
                             <div>
                                 <input type="password" placeholder="Password"
@@ -296,6 +302,8 @@
                             <button type="submit" class="w-full py-3 rounded-full next-btn text-sm">
                                 Sign up
                             </button>
+                            
+                            
                         </div>
                     </div>
                 </div>

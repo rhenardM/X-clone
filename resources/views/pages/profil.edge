@@ -19,23 +19,40 @@
     @vite(['resources/css/profile.css', 'resources/js/profile.js'])
     @stack('dumper')
   </head>
-  <body class="">
-    <main class="flex h-screen">
-      <!-- Barre latérale gauche -->
-      @include('pages/partials/sidebar_left')
+  <body class="bg-black text-white">
+    <main class="flex justify-center h-screen">
+        <!-- Conteneur principal centré -->
+        <div class="flex w-full justify-center">
+            <!-- Groupe des 3 colonnes jointives -->
+            <div class="flex">
+                <!-- Barre latérale gauche -->
+                <div class="w-64 gh flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+                    @include('pages/partials/sidebar_left')
+                </div>
+                
+                <!-- Colonne centrale -->
+                <div class="flex-1 min-w-0">
+                    <header class="sticky top-0 z-10 bg-black/80 backdrop-blur-sm">
+                        @include('pages/Partials/header')
+                    </header>
+                    <section class="overflow-y-auto h-[calc(100vh-2.5rem)]">
+                        <div class="max-w-2xl mx-auto w-full px-2">
+                          @include('pages/layouts/profil_content')
+                        </div>
+                    </section>
+                </div>
 
-      <!-- Contenu principal -->
-      <div class="flex-1 flex flex-col bg-black h-screen">
-        <!-- Inclusion du Header -->
-          @include('pages/Partials/header')
-      <!-- Contenu principal du profil -->
-      <section class="flex-1 ml-64 mr-64 bg-black overflow-y-auto h-screen">
-        @include('pages/layouts/profil_content')
-      </section>
-      </div>
-  
-      <!-- Barre latérale droite -->
-      @include('pages/partials/sidebar_right')
+                <!-- Barre latérale droite -->
+                <div class="w-94  flex-shrink-0 sticky top-0 h-screen overflow-y-auto">
+                    @include('pages/partials/sidebar_right')
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation mobile -->
+        <div class="md:hidden fixed bottom-0 left-0 right-0 bg-black z-10">
+            @include('pages/partials/mobile_nav')
+        </div>
     </main>
-  </body>
+</body>
 </html>

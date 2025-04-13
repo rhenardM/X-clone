@@ -1,182 +1,217 @@
 @each(tweet in tweets)
-<div class="bg-black text-white p-4 shadow-lg border-t border-b border-gray-800 w-full max-w-2xl mx-auto mb-6 rounded-xl">
+<div class="bg-black text-white p-4 hover:bg-white/5 transition-colors duration-150 border-b border-gray-800 w-full max-w-2xl mx-auto">
 
-  <!-- Si retweet -->
+  <!-- Retweet header -->
   @if(tweet.retweetFrom)
-    <div class="text-gray-400 text-sm mb-4 flex items-center space-x-1">
-      <img src="{{ tweet.retweetFrom && tweet.retweetFrom.user ? tweet.retweetFrom.user.profile_picture : (tweet.user ? tweet.user.profile_picture : '/default-avatar.png') }}" class="w-12 h-12 rounded-full object-cover">      
-      <span>Retweeté par {{ tweet.user.username }}</span>
-    </div>
+  <div class="text-gray-500 text-xs mb-1 flex items-center gap-2 pl-14">
+    <img 
+    src="{{ tweet.retweetFrom ? (tweet.retweetFrom.user?.profile_picture | ensureFullUrl) : (tweet.user?.profile_picture | ensureFullUrl) }}" 
+    class="w-12 h-12 rounded-full object-cover"
+    alt="Profile picture"
+    onerror="this.src='/resources/img/me.jpeg'"
+  >
+  <span>Retweeté par {{ tweet.user.username }}</span>
+  </div>
   @endif
 
-  <div class="flex items-start gap-4" id="tweet-{{ tweet.id }}">
-    <img src="{{ tweet.retweetFrom && tweet.retweetFrom.user ? tweet.retweetFrom.user.profile_picture : (tweet.user ? tweet.user.profile_picture : '/default-avatar.png') }}" class="w-12 h-12 rounded-full object-cover">    
-    <div class="flex-1">
-      <div class="flex justify-between items-start gap-2 flex-wrap">
-        <div class="text-sm md:text-base">
-          <span class="font-bold block">
-            {{ tweet.retweetFrom ? tweet.retweetFrom.user.firstname + ' ' + tweet.retweetFrom.user.lastname : tweet.user.firstname + ' ' + tweet.user.lastname }}
+  <div class="flex gap-3" id="tweet-{{ tweet.id }}">
+    <!-- Profile picture -->
+    <div class="flex-shrink-0">
+      <img 
+        src="{{ tweet.retweetFrom ? (tweet.retweetFrom.user?.profile_picture | ensureFullUrl) : (tweet.user?.profile_picture | ensureFullUrl) }}" 
+        class="w-12 h-12 rounded-full object-cover"
+        alt="Profile picture"
+        onerror="this.src='/resources/img/me.jpeg'"
+      >
+    </div>
+    
+    <!-- Tweet content -->
+    <div class="flex-1 min-w-0">
+      <!-- User info and timestamp -->
+      <div class="flex justify-between items-start gap-2">
+        <div class="flex items-center gap-1 flex-wrap">
+          <span class="font-bold text-sm sm:text-base hover:underline cursor-pointer">
+            {{ tweet.retweetFrom ? tweet.retweetFrom.user.firstname + ' ' + tweet.retweetFrom.user.lastname : tweet.user.firstname + ' ' + tweet.user.lastname }}          
           </span>
-          <span class="text-gray-500 text-xs md:text-sm">
-            {{ tweet.retweetFrom ? tweet.retweetFrom.user.username : tweet.user.username }} · {{ tweet.createdAt }}
+          <span class="text-gray-500 text-xs sm:text-sm">
+            {{ tweet.retweetFrom ? tweet.retweetFrom.user.username : tweet.user.username }} · {{ tweet.createdAt }}         
+          </span>
+          <span class="text-gray-500 hidden sm:inline"></span>
+          <span class="text-gray-500 text-xs sm:text-sm">
+            {{-- {{ tweet.createdAt }} --}}
           </span>
         </div>
-        <button class="text-gray-500 hover:text-white text-xl leading-none">...</button>
+        <button class="text-gray-500 hover:text-blue-500 p-1 rounded-full hover:bg-blue-500/10">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z" />
+          </svg>
+        </button>
       </div>
 
-      <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
-        <p class="mt-2 text-sm md:text-base whitespace-pre-wrap">
-          {{ tweet.retweetFrom ? tweet.retweetFrom.content : tweet.content }}
+      <!-- Tweet text -->
+      <a href=""id="toggleComments" onclick="toggleComments(event, {{ tweet.id }})">
+        <p class="mt-1 text-sm sm:text-base whitespace-pre-wrap break-words cursor-pointer">
+          {{ tweet.retweetFrom?.content ?? tweet.content }}
         </p>
       </a>
 
-      <!-- Media (du tweet original si retweet) -->
-      <a onclick="toggleComments(event, {{ tweet.id }})" href="#">
-        @if((tweet.retweetFrom ? tweet.retweetFrom.medias.length : tweet.medias.length) > 0)
-          <div class="w-full mt-3 {{ (tweet.retweetFrom ? tweet.retweetFrom.medias.length : tweet.medias.length) === 1 ? 'aspect-video' : 'grid grid-cols-2 gap-2' }}">
-            @each(media in (tweet.retweetFrom ? tweet.retweetFrom.medias : tweet.medias))
+      <!-- Media -->
+      <a href="" id="toggleComments" onclick="toggleComments(event, {{ tweet.id }})">
+        @if((tweet.retweetFrom?.medias?.length ?? tweet.medias?.length) > 0)
+          <div class="w-full mt-3 rounded-xl overflow-hidden 
+            {{ (tweet.retweetFrom?.medias?.length ?? tweet.medias?.length) === 1 ? 'aspect-video' : 'grid grid-cols-2 gap-2' }}">
+            @each(media in (tweet.retweetFrom?.medias ?? tweet.medias))
               @if(media.url.endsWith('.mp4') || media.url.endsWith('.webm'))
-                <video src="{{ media.url }}" class="rounded-xl w-full h-auto max-h-80 object-contain" controls></video>
+                <video src="{{ media.url }}" class="w-full h-full object-cover" controls></video>
               @else
-                <img src="{{ media.url }}" class="rounded-xl w-full h-auto max-h-96 object-cover">
+                <img src="{{ media.url }}" class="w-full h-full object-cover" alt="Media content">
               @endif
             @endeach
           </div>
         @endif
       </a>
 
-      <!-- Icons interaction -->
-      <div class="flex items-center justify-between mt-4 text-gray-500 text-sm">
+      <!-- Tweet actions -->
+      <div class="flex justify-between mt-3 text-gray-500 text-xs sm:text-sm">
         <!-- Comment -->
-        <button class="hover:text-blue-500 flex items-center space-x-1" onclick="toggleCommentForm({{ tweet.id }})">
-          <i class="fa-regular fa-comment"></i>
+        <button class="group flex items-center gap-1 hover:text-blue-500" onclick="toggleCommentForm({{ tweet.id }})">
+          <div class="p-2 rounded-full group-hover:bg-blue-500/10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 20.25c4.97 0 9-3.694 9-8.25s-4.03-8.25-9-8.25S3 7.444 3 12c0 2.104.859 4.023 2.273 5.48.432.447.74 1.04.586 1.641a4.483 4.483 0 01-.923 1.785A5.969 5.969 0 006 21c1.282 0 2.47-.402 3.445-1.087.81.22 1.668.337 2.555.337z" />
+            </svg>
+          </div>
           <span id="comment-count-{{ tweet.id }}" class="{{ tweet.commentCount > 0 ? 'text-gray-300' : 'hidden' }}">
             {{ tweet.commentCount || 0 }}
           </span>
         </button>
 
         <!-- Retweet -->
-        <button class="hover:text-green-500 flex items-center space-x-1" onclick="toggleRetweet({{ tweet.id }})">
-          <i class="fa-solid fa-retweet"></i>
-          <span 
-            id="retweet-count-{{ tweet.id }}" 
-            class="transition-opacity duration-150 {{ tweet.retweetCount > 0 ? 'text-gray-300' : 'hidden' }}">
+        <button class="group flex items-center gap-1 hover:text-green-500" onclick="toggleRetweet({{ tweet.id }})">
+          <div class="p-2 rounded-full group-hover:bg-green-500/10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.678 48.678 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7c-.017.22-.032.441-.046.662M19.5 12l3-3m-3 3l-3-3m-12 3c0 1.232.046 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.017-.22.032-.441.046-.662M4.5 12l3 3m-3-3l-3 3" />
+            </svg>
+          </div>
+          <span id="retweet-count-{{ tweet.id }}" class="{{ tweet.retweetCount > 0 ? 'text-gray-300' : 'hidden' }}">
             {{ tweet.retweetCount }}
-        </span>
+          </span>
         </button>
 
-        <!-- Like --> 
-        <button class="like-button flex items-center space-x-1 group" onclick="toggleLike({{ tweet.id }})">
-          <i id="like-icon-{{ tweet.id }}" class="fa-heart transition-all duration-150 {{ tweet.isLikedByUser ? 'fa-solid text-red-500' : 'fa-regular text-gray-400' }}"></i>
-          <span id="like-count-{{ tweet.id }}" 
-          class="transition-opacity duration-150 {{ tweet.likeCount > 0 ? 'text-gray-300' : 'hidden' }}">
+        <!-- Like -->
+        <button class="group flex items-center gap-1 hover:text-pink-500" onclick="toggleLike({{ tweet.id }})">
+          <div class="p-2 rounded-full group-hover:bg-pink-500/10">
+            <svg xmlns="http://www.w3.org/2000/svg" 
+              id="like-icon-{{ tweet.id }}" 
+              class="h-5 w-5 {{ tweet.isLikedByUser ? 'fill-pink-500 text-pink-500' : 'text-gray-400' }}" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+            </svg>
+          </div>
+          <span id="like-count-{{ tweet.id }}" class="{{ tweet.likeCount > 0 ? 'text-gray-300' : 'hidden' }}">
             {{ tweet.likeCount || 0 }}
           </span>
         </button>
 
-        <button class="hover:text-yellow-500 flex items-center space-x-1"><i class="fa-regular fa-bookmark"></i></button>
-        <button class="hover:text-gray-700 flex items-center space-x-1"><i class="fa-solid fa-share"></i></button>
-        <button class="hover:text-gray-700 flex items-center space-x-1"><i class="fa-solid fa-ellipsis"></i></button>
+        <!-- Share -->
+        <button class="group flex items-center gap-1 hover:text-blue-500">
+          <div class="p-2 rounded-full group-hover:bg-blue-500/10">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+            </svg>
+          </div>
+        </button>
       </div>
     </div>
   </div>
 
-  <!-- Section comments -->
-  <div id="comments-section-{{ tweet.id }}" class="hidden mt-2 space-y-2 ">
-    <!-- Les commentaires seront injectés ici dynamiquement -->
-  </div>
-</div>
-  <!-- Formulaire de commentaire sous forme de pop-up -->
-  <div id="comment-form-{{ tweet.id }}" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-start justify-center z-50 pt-16">
-    <div class="bg-black text-white rounded-2xl w-full max-w-xl border border-gray-800 shadow-xl">
-        <!-- En-tête avec bouton de fermeture -->
-        <div class="p-3 border-b border-gray-800 flex items-center">
-            <button 
-                onclick="toggleCommentForm({{ tweet.id }})"
-                class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-800 transition"
-            >
-                <i class="fas fa-times text-xl"></i>
-            </button>
-        </div>
-        
-        <!-- Contenu du tweet original (simulé) -->
-        <div class="p-4 border-b border-gray-800 flex">
-            <div class="mr-3">
-                <div class="w-10 h-10 rounded-full bg-gray-600"></div>
-            </div>
-            <div class="flex-1">
-                <div class="flex items-center">
-                    <span class="font-bold mr-1">{{ auth.user.firstname }} {{auth.user.lastname}}</span>
-                    <span class="text-gray-500 text-sm">{{auth.user.username}}</span>
-                </div>
-                <p class="mt-1 text-base">{{ tweet.content }}</p>
-                <div class="mt-2 text-sm text-gray-500">
-                    En réponse à <span class="text-blue-500">{{auth.user.username}}</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Zone de réponse -->
-        <div class="p-4 flex">
-            <div class="mr-3">
-                <div class="w-10 h-10 rounded-full bg-gray-600"></div>
-            </div>
-            <div class="flex-1">
-                <form onsubmit="submitComment(event, {{ tweet.id }})">
-                    <input type="hidden" name="_csrf" value="{{ csrfToken }}">
-                    
-                    <textarea 
-                        name="content" 
-                        placeholder="Poster votre réponse" 
-                        class="comment-textarea bg-transparent text-white w-full resize-none placeholder-gray-500 text-base"
-                        oninput="updateCharCount(this)"
-                    ></textarea>
-                    
-                    <!-- Barre de progression (similaire à Twitter) -->
-                    <div class="progress-bar mb-3"></div>
-                    
-                    <!-- Icônes d'options -->
-                    <div class="flex items-center justify-between pt-3 border-t border-gray-800">
-                        <div class="flex space-x-0 text-blue-500">
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
-                                <i class="far fa-image text-lg"></i>
-                            </button>
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
-                                <i class="fas fa-list-ul text-lg"></i>
-                            </button>
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
-                                <i class="far fa-smile text-lg"></i>
-                            </button>
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
-                                <i class="far fa-calendar-alt text-lg"></i>
-                            </button>
-                            <button type="button" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-blue-900 hover:bg-opacity-20 transition">
-                                <i class="fas fa-map-marker-alt text-lg"></i>
-                            </button>
-                        </div>
-                        
-                        <div class="flex items-center">
-                            <span id="char-count-{{ tweet.id }}" class="char-count">0/280</span>
-                            <button 
-                                type="submit" 
-                                id="submit-btn-{{ tweet.id }}"
-                                class="bg-white text-black px-4 py-1.5 rounded-full font-bold opacity-50 cursor-not-allowed text-sm hover:bg-gray-400 transition"
-                                disabled
-                            >
-                                Répondre
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
-        </div>
+    <!-- Comments section -->
+    <div id="comments-section-{{ tweet.id }}" class="hidden mt-3 pl-14 space-y-3">
+      {{-- ici les comments vont afficher dynamiquement --}}
     </div>
+</div>
+
+<!-- Comment form modal -->
+<div id="comment-form-{{ tweet.id }}" class="hidden fixed inset-0 bg-black/50 flex items-start justify-center z-50 pt-16 px-4">
+  <div class="bg-black text-white rounded-2xl w-full max-w-xl border border-gray-800 shadow-xl">
+    <div class="p-3 border-b border-gray-800 flex items-center">
+      <button onclick="toggleCommentForm({{ tweet.id }})" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-gray-800 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+    
+    <!-- Original tweet -->
+    <div class="p-4 border-b border-gray-800 flex">
+      <div class="mr-3 flex-shrink-0">
+        <img src="{{ tweet.user.profile_picture ?? '/resources/img/me.jpeg' }}" class="w-10 h-10 rounded-full" alt="Profile picture">
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-1 truncate">
+          <span class="font-bold text-sm truncate">{{ tweet.user.firstname }} {{ tweet.user.lastname }}</span>
+          <span class="text-gray-500 text-xs truncate">{{ tweet.user.username }}</span>
+        </div>
+        <p class="mt-1 text-sm">{{ tweet.content }}</p>
+        <div class="mt-2 text-xs text-gray-500">
+          En réponse à <span class="text-blue-500">{{ tweet.user.username }}</span>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Reply form -->
+    <div class="p-4 flex">
+      <div class="mr-3 flex-shrink-0">
+        <img src="{{ auth.user.profile_picture ?? '/resources/img/me.jpeg' }}" class="w-10 h-10 rounded-full" alt="Your profile">
+      </div>
+      <div class="flex-1 min-w-0">
+        <form onsubmit="submitComment(event, {{ tweet.id }})">
+          <input type="hidden" name="_csrf" value="{{ csrfToken }}">
+          
+          <textarea 
+            name="content" 
+            placeholder="Poster votre réponse" 
+            class="comment-textarea bg-transparent text-white w-full resize-none placeholder-gray-500 text-sm sm:text-base focus:outline-none"
+            rows="3"
+            oninput="updateCharCount(this)"
+          ></textarea>
+          
+          <div class="flex items-center justify-between pt-3 border-t border-gray-800">
+            <div class="flex gap-2">
+              <button type="button" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-500/10 text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                </svg>
+              </button>
+              <button type="button" class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-blue-500/10 text-blue-500">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+                </svg>
+              </button>
+            </div>
+            
+            <div class="flex items-center gap-3">
+              <span id="char-count-{{ tweet.id }}" class="text-xs text-gray-500">0/280</span>
+              <button 
+                type="submit" 
+                id="submit-btn-{{ tweet.id }}"
+                class="bg-blue-500 text-white px-4 py-1.5 rounded-full font-bold text-sm hover:bg-blue-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled
+              >
+                Répondre
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+  </div>
 </div>
 @endeach
 
 
 {{-- retweet togle --}}
-
 <script>
     async function toggleRetweet(tweetId) {
       try {
@@ -217,8 +252,8 @@
 
 {{-- This script displays comments dynamically --}}
 <script>
-  event.preventDefault();
   async function toggleComments(event,tweetId) {
+    event.preventDefault();
     console.log('Clicked for tweetId:', tweetId); 
 
     const container = document.getElementById(`comments-section-${tweetId}`);
@@ -269,78 +304,50 @@
     }
   }
 </script>
-
-{{-- end --}}
+{{-- end displaying --}}
 
 {{-- comment --}}
 <script>
-  function toggleCommentForm(tweetId) {
-      const form = document.getElementById(`comment-form-${tweetId}`);
-      form.classList.toggle('hidden');
-      
-      // Reset form when opening
-      if (!form.classList.contains('hidden')) {
-          const textarea = form.querySelector('textarea');
-          textarea.value = '';
-          updateCharCount(textarea);
-          
-          // Reset progress bar
-          const progressBar = form.querySelector('.progress-bar');
-          progressBar.style.width = '0%';
-          
-          // Reset submit button
-          const submitBtn = form.querySelector(`#submit-btn-${tweetId}`);
-          submitBtn.disabled = true;
-          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          submitBtn.classList.remove('opacity-100', 'cursor-pointer');
-          
-          // Reset char count
-          const charCount = form.querySelector(`#char-count-${tweetId}`);
-          charCount.textContent = '0/280';
-          charCount.className = 'char-count';
-      }
+function toggleCommentForm(tweetId) {
+    const form = document.getElementById(`comment-form-${tweetId}`);
+    form.classList.toggle('hidden');
+
+    if (!form.classList.contains('hidden')) {
+        const textarea = form.querySelector('textarea');
+        textarea.value = '';
+        updateCharCount(textarea);
+
+        const submitBtn = form.querySelector(`#submit-btn-${tweetId}`);
+        submitBtn.disabled = true;
+        submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        submitBtn.classList.remove('opacity-100', 'cursor-pointer');
+
+        const charCount = form.querySelector(`#char-count-${tweetId}`);
+        charCount.textContent = '0/280';
+        charCount.className = 'char-count';
+    }
+}
+
+function updateCharCount(textarea) {
+  const content = textarea.value;
+  const tweetId = textarea.closest('form').getAttribute('onsubmit').match(/\d+/)[0];
+  const submitBtn = textarea.closest('form').querySelector(`#submit-btn-${tweetId}`);
+  const charCount = textarea.closest('form').querySelector(`#char-count-${tweetId}`);
+
+  charCount.textContent = `${content.length}/280`;
+
+  if (content.trim().length > 0 && content.length <= 280) {
+      submitBtn.disabled = false;
+      submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      submitBtn.classList.add('opacity-100', 'cursor-pointer');
+  } else {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+      submitBtn.classList.remove('opacity-100', 'cursor-pointer');
   }
-  
-  function updateCharCount(textarea) {
-      const content = textarea.value;
-      const tweetId = textarea.closest('form').getAttribute('onsubmit').match(/\d+/)[0];
-      const progressBar = textarea.closest('form').querySelector('.progress-bar');
-      const submitBtn = textarea.closest('form').querySelector(`#submit-btn-${tweetId}`);
-      const charCount = textarea.closest('form').querySelector(`#char-count-${tweetId}`);
-      
-      // Update character count
-      const remaining = 280 - content.length;
-      charCount.textContent = `${content.length}/280`;
-      
-      // Calculate percentage (Twitter uses 280 chars max)
-      const percentage = Math.min((content.length / 280) * 100, 100);
-      progressBar.style.width = `${percentage}%`;
-      
-      // Change color when approaching limit (like Twitter)
-      if (remaining < 0) {
-          progressBar.style.backgroundColor = '#f4212e'; // Red error
-          charCount.className = 'char-count error';
-      } else if (remaining <= 20) {
-          progressBar.style.backgroundColor = '#ffd400'; // Yellow warning
-          charCount.className = 'char-count warning';
-      } else {
-          progressBar.style.backgroundColor = '#1d9bf0'; // Blue normal
-          charCount.className = 'char-count';
-      }
-      
-      // Enable/disable submit button
-      if (content.trim().length > 0 && content.length <= 280) {
-          submitBtn.disabled = false;
-          submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-          submitBtn.classList.add('opacity-100', 'cursor-pointer');
-      } else {
-          submitBtn.disabled = true;
-          submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
-          submitBtn.classList.remove('opacity-100', 'cursor-pointer');
-      }
-  }
-  
-  async function submitComment(event, tweetId) {
+}
+
+async function submitComment(event, tweetId) {
       event.preventDefault();
       
       const form = event.target.closest('form');
@@ -430,5 +437,4 @@
       console.error('Erreur lors du traitement:', error);
     }
   }
-  </script>
-  
+</script>
