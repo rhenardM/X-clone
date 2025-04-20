@@ -1,0 +1,169 @@
+<!-- Formulaire de publication amélioré -->
+<div class="bg-black text-white px-4 py-3 border-b border-gray-800">
+    <form action="/tweet" method="POST" enctype="multipart/form-data" class="space-y-3">
+        {{ csrfField() }}
+        <div class="flex items-start gap-3">
+            <!-- Photo de profil -->
+            <img 
+                src="{{ auth.user.profile_picture || '/default-avatar.jpg' }}" 
+                alt="Photo de profil" 
+                class="w-12 h-12 rounded-full object-cover hover:opacity-90 cursor-pointer"
+            >
+            
+            <div class="flex-1 flex flex-col">
+                <!-- Zone de texte -->
+                <textarea
+                    name="content"
+                    rows="3"
+                    placeholder="Quoi de neuf ?"
+                    class="w-full bg-transparent text-white text-xl placeholder-gray-500 outline-none resize-none"
+                    oninput="toggleButton(this)"
+                ></textarea>
+
+                <!-- Sélecteur de visibilité -->
+                <div class="relative inline-block mt-2">
+                    <button 
+                        type="button" 
+                        id="visibilityButton" 
+                        class="flex items-center gap-1 text-blue-500 text-sm font-medium hover:bg-blue-500/10 px-2 py-1 rounded-full transition"
+                    >
+                        <span id="selectedVisibility">🌍 Tout le monde</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                        </svg>
+                    </button>
+
+                    <!-- Menu déroulant -->
+                    <div id="visibilityDropdown" class="hidden absolute z-10 bg-gray-900 text-white mt-1 rounded-xl shadow-lg w-64 overflow-hidden border border-gray-700">
+                        <div class="p-3 border-b border-gray-700">
+                            <h5 class="font-bold text-sm">Qui peut répondre ?</h5>
+                            <p class="text-xs text-gray-400 mt-1">Toute personne mentionnée pourra toujours répondre.</p>
+                        </div>
+                        
+                        <div class="py-1">
+                            <button 
+                                type="button" 
+                                class="w-full px-4 py-3 text-left hover:bg-gray-800/50 flex items-center gap-3 transition"
+                                onclick="setVisibility('Tout le monde')"
+                            >
+                                <div class="w-9 h-9 flex items-center justify-center bg-blue-500/20 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm0 4a6 6 0 000 12m0-10a4 4 0 010 8m0-6a2 2 0 010 4"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Tout le monde</p>
+                                    <p class="text-xs text-gray-400">N'importe qui sur X</p>
+                                </div>
+                            </button>
+                            
+                            <button 
+                                type="button" 
+                                class="w-full px-4 py-3 text-left hover:bg-gray-800/50 flex items-center gap-3 transition"
+                                onclick="setVisibility('Abonnés')"
+                            >
+                                <div class="w-9 h-9 flex items-center justify-center bg-blue-500/20 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 7.5A3.75 3.75 0 1112 3.75 3.75 3.75 0 0115.75 7.5zm-3.75 7.5c-3.75 0-6.75 2.25-6.75 4.5V21h13.5v-1.5c0-2.25-3-4.5-6.75-4.5z"/>
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Abonnés</p>
+                                    <p class="text-xs text-gray-400">Seulement vos abonnés</p>
+                                </div>
+                            </button>
+                            
+                            <button 
+                                type="button" 
+                                class="w-full px-4 py-3 text-left hover:bg-gray-800/50 flex items-center gap-3 transition"
+                                onclick="setVisibility('Cercle')"
+                            >
+                                <div class="w-9 h-9 flex items-center justify-center bg-blue-500/20 rounded-full">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 text-blue-500">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 2.25l2.122 4.29 4.728.686-3.422 3.335.808 4.71L12 13.77l-4.236 2.226.808-4.71-3.422-3.335 4.728-.686L12 2.25z" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium">Comptes certifiés</p>
+                                    <p class="text-xs text-gray-400">Comptes vérifiés</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barre d'outils -->
+                <div class="flex items-center justify-between pt-3 mt-2 border-t border-gray-800">
+                    <div class="flex gap-1 text-blue-500">
+                        <!-- Bouton Média -->
+                        <label class="p-2 rounded-full hover:bg-blue-500/10 cursor-pointer transition">
+                            <input name="media" type="file" class="hidden" accept="image/*,video/*" onchange="handleUpload(event)" />
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <circle cx="9" cy="9" r="2.5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M21 15l-5-5L5 21" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </label>
+                        
+                        <!-- Bouton GIF -->
+                        <button type="button" class="p-2 rounded-full hover:bg-blue-500/10 transition">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M16.8517 7.63334H15.7401C15.7526 7.55834 15.7634 7.48167 15.7634 7.40251V5.47501C15.7634 4.65834 15.0992 3.99417 14.2817 3.99417H2.91675V2.79834C2.91675 2.45334 2.63675 2.17334 2.29175 2.17334C1.94675 2.17334 1.66675 2.45334 1.66675 2.79834V17.3583C1.66675 17.7042 1.94675 17.9833 2.29175 17.9833C2.63675 17.9833 2.91675 17.7042 2.91675 17.3583V16.1633H11.7134C12.5301 16.1633 13.1951 15.4992 13.1951 14.6825V12.755C13.1951 12.6758 13.1834 12.5992 13.1717 12.5233H16.8526C17.6692 12.5233 18.3342 11.8583 18.3342 11.0417V9.11667C18.3342 8.29751 17.6701 7.63334 16.8526 7.63334H16.8517Z"/>
+                            </svg>
+                        </button>
+                        
+                        <!-- Bouton Emoji -->
+                        <button type="button" class="p-2 rounded-full hover:bg-blue-500/10 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M12 18.5a6.5 6.5 0 100-13 6.5 6.5 0 000 13z" />
+                            </svg>
+                        </button>
+                        
+                        <!-- Bouton Planification -->
+                        <button type="button" class="p-2 rounded-full hover:bg-blue-500/10 transition">
+                            <svg width="20" height="20" viewBox="0 0 20 20" fill="currentColor">
+                                <path d="M-31.5834 15C-31.6667 14.9167 -31.6667 14.9167 -31.6667 14.8333C-31.5834 14.8333 -31.5834 14.9167 -31.5834 15ZM14.9999 1.83334H13.9166V1.58334C13.9166 1.25001 13.6666 0.916672 13.2499 0.916672C12.9166 0.916672 12.5833 1.16667 12.5833 1.58334V1.83334H6.41659V1.58334C6.41659 1.25001 6.16659 0.916672 5.74992 0.916672C5.41659 0.916672 5.08325 1.16667 5.08325 1.58334V1.83334H3.99992C2.83325 1.83334 1.91659 2.75001 1.91659 3.91667V14.8333C1.91659 16 2.83325 16.9167 3.99992 16.9167H6.41659C6.74992 16.9167 7.08325 16.6667 7.08325 16.25C7.08325 15.9167 6.83326 15.5833 6.41659 15.5833H3.99992C3.49992 15.5833 3.16659 15.1667 3.16659 14.75V6.58334C3.16659 6.33334 3.49992 6 3.99992 6H14.9999C15.4999 6 15.8333 6.33334 15.8333 6.58334V8.08334C15.8333 8.41667 16.0833 8.75 16.4999 8.75C16.8333 8.75 17.1666 8.5 17.1666 8.08334V3.91667C17.0833 2.75001 16.1666 1.83334 14.9999 1.83334Z"/>
+                                <path d="M12.9167 8.66667C10.0833 8.66667 7.75 11 7.75 13.8333C7.75 16.6667 10.0833 19 12.9167 19C15.75 19 18.0833 16.6667 18.0833 13.8333C18.0833 11 15.75 8.66667 12.9167 8.66667ZM12.9167 17.8333C10.75 17.8333 9 16.0833 9 13.9167C9 11.75 10.75 10 12.9167 10C15.0833 10 16.8333 11.75 16.8333 13.9167C16.8333 16 15.0833 17.8333 12.9167 17.8333Z"/>
+                                <path d="M15.7499 15.5833C15.6666 15.75 15.4166 15.9167 15.2499 15.9167C15.1666 15.9167 14.9999 15.9167 14.9166 15.8333L12.3333 14.1667V11.6667C12.3333 11.3333 12.5833 11 12.9999 11C13.3333 11 13.6666 11.25 13.6666 11.6667V13.5L15.6666 14.75C15.8333 14.9167 15.9166 15.25 15.7499 15.5833Z"/>
+                            </svg>
+                        </button>
+                    </div>
+                    
+                    <!-- Bouton de publication -->
+                    <button
+                        type="submit"
+                        id="postButton"
+                        disabled
+                        class="bg-blue-500 text-white font-bold px-4 py-1.5 rounded-full transition opacity-50 hover:bg-blue-600 disabled:cursor-not-allowed"
+                    >
+                        Publier
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+    <script>
+        function toggleButton(textarea) {
+        const button = document.getElementById('postButton');
+        if (textarea.value.trim().length > 0) {
+            button.removeAttribute('disabled');
+            button.classList.remove('bg-gray-500', 'text-gray-300', 'cursor-not-allowed');
+            button.classList.add('bg-white', 'text-black', 'hover:bg-white-dark');
+        } else {
+            button.setAttribute('disabled', 'true');
+            button.classList.remove('bg-primary', 'text-white', 'hover:bg-primary-dark');
+            button.classList.add('bg-gray-500', 'text-gray-300', 'cursor-not-allowed');
+        }
+        }
+    
+        function setVisibility(option) {
+        document.getElementById('selectedVisibility').innerText = option;
+        document.getElementById('visibilityDropdown').classList.toggle('hidden');
+        }
+    
+        document.getElementById('visibilityButton').addEventListener('click', function () {
+        document.getElementById('visibilityDropdown').classList.toggle('hidden');
+        });
+    </script>
+    

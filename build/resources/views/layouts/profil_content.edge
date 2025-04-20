@@ -1,0 +1,265 @@
+<section class="w-full max-w-2xl mx-auto text-white">
+    <!-- Bannière -->
+    <div class="relative h-48 sm:h-52 bg-gray-800">
+        <img src="{{ auth.user.banner || '/resources/img/me.jpeg' }}" alt="Bannière" class="w-full h-full object-cover">
+        
+        <!-- Photo de profil -->
+        <div class="flex items-center gap-4 px-4 relative ">
+            <div class="absolute -bottom-16 left-4 border-4 mb-4 border-black rounded-full w-24 h-24 sm:w-32 sm:h-32">
+                <img src="{{ auth.user.profile_picture || '/resources/img/me.jpeg' }}" alt="Avatar" class="w-full h-full rounded-full object-cover">
+            </div>
+            <button class="ml-auto mt-3 border font-semibold border-gray-600 px-3 py-1 sm:px-4 sm:py-1.5 rounded-full text-white hover:bg-white/10 transition"
+                onclick="toggleProfileSettings()">
+                Modifier le profil
+            </button>
+        </div>
+    </div>
+
+    <!-- Informations du profil -->
+    <div class="mt-20 sm:mt-24 px-4">
+        <div class="flex flex-col sm:flex-row sm:justify-between gap-4">
+            <div>
+                <h1 class="text-xl sm:text-2xl font-bold">{{ user.firstname }} {{ user.lastname }}</h1>
+                <p class="text-gray-400">{{ user.username }}</p>
+                <p class="mt-3 text-sm sm:text-base">
+                    {{ user.bio || "Aucune biographie" }}
+                </p>
+                
+                <!-- Détails -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-gray-400 mt-3 text-sm">
+                    @if(user.location)
+                    <div class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 7c-1.93 0-3.5 1.57-3.5 3.5S10.07 14 12 14s3.5-1.57 3.5-3.5S13.93 7 12 7zm0 5c-.827 0-1.5-.673-1.5-1.5S11.173 9 12 9s1.5.673 1.5 1.5S12.827 12 12 12zm0-10c-4.687 0-8.5 3.813-8.5 8.5 0 5.967 7.621 11.116 7.945 11.332l.555.37.555-.37c.324-.216 7.945-5.365 7.945-11.332C20.5 5.813 16.687 2 12 2zm0 17.77c-1.665-1.241-6.5-5.196-6.5-9.27C5.5 6.916 8.416 4 12 4s6.5 2.916 6.5 6.5c0 4.073-4.835 8.028-6.5 9.27z"/>
+                        </svg>
+                        <span>{{ user.location }}</span>
+                    </div>
+                    @endif
+                    
+                    <div class="flex items-center gap-1">
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M7 4V3h2v1h6V3h2v1h1.5C19.89 4 21 5.12 21 6.5v12c0 1.38-1.11 2.5-2.5 2.5h-13C4.12 21 3 19.88 3 18.5v-12C3 5.12 4.12 4 5.5 4H7zm0 2H5.5c-.27 0-.5.22-.5.5v12c0 .28.23.5.5.5h13c.28 0 .5-.22.5-.5v-12c0-.28-.22-.5-.5-.5H17v1h-2V6H9v1H7V6zm0 6h2v-2H7v2zm0 4h2v-2H7v2zm4-4h2v-2h-2v2zm0 4h2v-2h-2v2zm4-4h2v-2h-2v2z"/>
+                        </svg>
+                        <span>A rejoint {{ user.createdAt ? user.createdAt.toFormat('MMMM yyyy') : 'Date inconnue' }}</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="sm:self-start">
+                <a href="#" class="inline-flex items-center gap-2 border font-semibold text-sm border-gray-600 px-3 py-1.5 rounded-full text-white hover:bg-white/10 transition">
+                    <svg width="18" height="18" viewBox="0 0 18 18" fill="text-blue-500" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.7501 9.41667C17.7501 8.1 17.0209 6.95833 15.9601 6.41667C16.0884 6.05417 16.1584 5.6625 16.1584 5.25C16.1584 3.40833 14.7334 1.91833 12.9768 1.91833C12.5851 1.91833 12.2101 1.98833 11.8634 2.12667C11.3484 1.0125 10.2584 0.25 9.0001 0.25C7.74177 0.25 6.65343 1.01417 6.13593 2.125C5.7901 1.9875 5.41427 1.91667 5.0226 1.91667C3.26427 1.91667 1.84093 3.40833 1.84093 5.25C1.84093 5.66167 1.9101 6.05333 2.03843 6.41667C0.978434 6.95833 0.249268 8.09833 0.249268 9.41667C0.249268 10.6625 0.900934 11.7483 1.8676 12.3217C1.85093 12.4633 1.84093 12.605 1.84093 12.75C1.84093 14.5917 3.26427 16.0833 5.0226 16.0833C5.41427 16.0833 5.78927 16.0117 6.1351 15.875C6.65177 16.9867 7.7401 17.75 8.99927 17.75C10.2593 17.75 11.3476 16.9867 11.8634 15.875C12.2093 16.0108 12.5843 16.0817 12.9768 16.0817C14.7351 16.0817 16.1584 14.59 16.1584 12.7483C16.1584 12.6033 16.1484 12.4617 16.1309 12.3208C17.0959 11.7483 17.7501 10.6625 17.7501 9.4175V9.41667ZM12.2368 6.63833L8.6251 12.055C8.50427 12.2358 8.30677 12.3333 8.10427 12.3333C7.9851 12.3333 7.86427 12.3 7.7576 12.2283L7.66177 12.15L5.64927 10.1375C5.4051 9.89333 5.4051 9.4975 5.64927 9.25417C5.89343 9.01083 6.28927 9.00917 6.5326 9.25417L8.0076 10.7267L11.1951 5.94333C11.3868 5.65583 11.7751 5.58 12.0618 5.77083C12.3501 5.9625 12.4284 6.35083 12.2368 6.6375V6.63833Z" fill="#1DA1F2"/>
+                    </svg>
+                    Certification
+                </a>
+            </div>
+        </div>
+
+        <!-- Statistiques -->
+        <div class="flex gap-6 mt-4 text-sm sm:text-base">
+            <a href="#" class="hover:underline">
+                <span class="font-bold text-white">{{ followersCount }}</span>
+                <span class="text-gray-400">Followers</span>
+            </a>
+            <a href="#" class="hover:underline">
+                <span class="font-bold text-white">{{ followingCount }}</span>
+                <span class="text-gray-400">Following</span>
+            </a>        
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="flex mt-4 border-b border-gray-700 text-sm sm:text-base">
+        <a href="#" class="flex-1 py-4 hover:bg-white/5 text-white font-medium border-b-4 border-blue-500">Publications</a>
+        <a href="#" class="flex-1 py-4 hover:bg-white/5 text-gray-400">Réponses</a>
+        <a href="#" class="flex-1 py-4 hover:bg-white/5 text-gray-400">Médias</a>
+        <a href="#" class="flex-1 py-4 hover:bg-white/5 text-gray-400">J'aime</a>
+    </nav>
+
+    <!-- Liste des Tweets -->
+    <div class="divide-y divide-gray-800">
+        @each(tweet in tweets)
+        <div class="p-4 hover:bg-white/5 transition-colors duration-150">
+            <div class="flex gap-3">
+                <img src="{{ user.profile_picture || '/resources/img/me.jpeg' }}" alt="Avatar" class="w-10 h-10 sm:w-12 sm:h-12 rounded-full">
+                <div class="flex-1 min-w-0">
+                    <div class="flex items-center gap-1">
+                        <span class="font-bold hover:underline cursor-pointer">{{ tweet.user.firstname }} {{ tweet.user.lastname }}</span>
+                        <span class="text-gray-400">{{ tweet.user.username }}</span>
+                        <span class="text-gray-400">·</span>
+                        <span class="text-gray-400 hover:underline cursor-pointer">{{ tweet.createdAt }}</span>
+                    </div>
+                    
+                    <p class="mt-1 whitespace-pre-wrap break-words">{{ tweet.content }}</p>
+
+                    <!-- Médias -->
+                    @if(tweet.medias?.length > 0)
+                        <div class="mt-3 rounded-2xl overflow-hidden {{ tweet.medias.length === 1 ? 'aspect-video' : 'grid grid-cols-2 gap-0.5' }}">
+                            @each(media in tweet.medias)
+                                @if(media.url.endsWith('.mp4') || media.url.endsWith('.webm'))
+                                    <video src="{{ media.url }}" class="w-full h-full object-cover" controls></video>
+                                @else
+                                    <img src="{{ media.url }}" class="w-full h-full object-cover" alt="Média">
+                                @endif
+                            @endeach
+                        </div>
+                    @endif
+
+                    <!-- Actions -->
+                    <div class="flex justify-between mt-3 text-gray-400 max-w-md">
+                        <!-- Commentaire -->
+                        <button class="group flex items-center hover:text-blue-500" onclick="toggleCommentForm({{ tweet.id }})">
+                            <div class="p-2 rounded-full group-hover:bg-blue-500/10 transition">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M1.751 10c0-4.42 3.584-8 8.005-8h4.366c4.49 0 8.129 3.64 8.129 8.13 0 2.96-1.607 5.68-4.196 7.11l-8.054 4.46v-3.69h-.067c-4.49.1-8.183-3.51-8.183-8.01zm8.005-6c-3.317 0-6.005 2.69-6.005 6 0 3.37 2.77 6.08 6.138 6.01l.351-.01h1.761v2.3l5.087-2.81c1.951-1.08 3.163-3.13 3.163-5.36 0-3.39-2.744-6.13-6.129-6.13H9.756z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs">{{ tweet.commentCount || 0 }}</span>
+                        </button>
+
+                        <!-- Retweet -->
+                        <button class="group flex items-center hover:text-green-500" onclick="toggleRetweet({{ tweet.id }})">
+                            <div class="p-2 rounded-full group-hover:bg-green-500/10 transition">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M4.5 3.88l4.432 4.14-1.364 1.46L5.5 7.55V16c0 1.1.896 2 2 2H13v2H7.5c-2.209 0-4-1.79-4-4V7.55L1.432 9.48.068 8.02 4.5 3.88zM16.5 6H11V4h5.5c2.209 0 4 1.79 4 4v8.45l2.068-1.93 1.364 1.46-4.432 4.14-4.432-4.14 1.364-1.46 2.068 1.93V8c0-1.1-.896-2-2-2z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs">{{ tweet.retweetCount || 0 }}</span>
+                        </button>
+
+                        <!-- Like -->
+                        <button class="group flex items-center hover:text-pink-500" onclick="toggleLike({{ tweet.id }})">
+                            <div class="p-2 rounded-full group-hover:bg-pink-500/10 transition">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24" fill="{{ tweet.isLikedByUser ? 'currentColor' : 'none' }}" stroke="currentColor">
+                                    <path d="M16.697 5.5c-1.222-.06-2.679.51-3.89 2.16l-.805 1.09-.806-1.09C9.984 6.01 8.526 5.44 7.304 5.5c-1.243.07-2.349.78-2.91 1.91-.552 1.12-.633 2.78.479 4.82 1.074 1.97 3.257 4.27 7.129 6.61 3.87-2.34 6.052-4.64 7.126-6.61 1.111-2.04 1.03-3.7.477-4.82-.561-1.13-1.666-1.84-2.908-1.91zm4.187 7.69c-1.351 2.48-4.001 5.12-8.379 7.67l-.503.3-.504-.3c-4.379-2.55-7.029-5.19-8.382-7.67-1.36-2.5-1.41-4.86-.514-6.67.887-1.79 2.647-2.91 4.601-3.01 1.651-.09 3.368.56 4.798 2.01 1.429-1.45 3.146-2.1 4.796-2.01 1.954.1 3.714 1.22 4.601 3.01.896 1.81.846 4.17-.514 6.67z"/>
+                                </svg>
+                            </div>
+                            <span class="text-xs">{{ tweet.likeCount || 0 }}</span>
+                        </button>
+
+                        <!-- Partager -->
+                        <button class="group flex items-center hover:text-blue-500">
+                            <div class="p-2 rounded-full group-hover:bg-blue-500/10 transition">
+                                <svg class="w-5 h-5" viewBox="0 0 24 24">
+                                    <path fill="currentColor" d="M12 2.59l5.7 5.7-1.41 1.42L13 6.41V16h-2V6.41l-3.3 3.3-1.41-1.42L12 2.59zM21 15l-.02 3.51c0 1.38-1.12 2.49-2.5 2.49H5.5C4.11 21 3 19.88 3 18.5V15h2v3.5c0 .28.22.5.5.5h12.98c.28 0 .5-.22.5-.5L19 15h2z"/>
+                                </svg>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @endeach
+    </div>
+</section>
+  <!-- Profile Settings Modal -->
+  <div id="profile-settings" class="hidden fixed inset-0 bg-gray-900 bg-opacity-70 z-50 flex justify-center items-center">
+    <div class="bg-black text-white rounded-xl w-full max-w-xl overflow-hidden">
+        <!-- Header -->
+        <div class="relative p-4 border-b border-gray-800">
+            <div class="flex items-center">
+                <button onclick="toggleProfileSettings()" class="w-10 h-10 rounded-full hover:bg-gray-800 flex items-center justify-center mr-6">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+                <div>
+                    <h2 class="text-xl font-bold">Edit profile</h2>
+                </div>
+            </div>
+            <button class="absolute right-4 top-4 bg-white text-black font-bold px-4 py-1.5 rounded-full hover:bg-gray-200 transition">
+                Save
+            </button>
+        </div>
+
+        <!-- Banner and Profile Picture -->
+        <div class="relative">
+            <!-- Banner -->
+            <div class="banner-preview bg-gray-800">
+                <img id="banner-preview-img" src="{{auth.user.banner}}" class="w-full h-full object-cover" alt="Banner">
+                <div class="edit-overlay">
+                    <label for="banner" class="file-input-label bg-black bg-opacity-60 rounded-full p-2">
+                        <i class="fas fa-camera text-white"></i>
+                    </label>
+                </div>
+            </div>
+            
+            <!-- Profile Picture -->
+            <div class="absolute -bottom-16 left-4">
+                <div class="profile-pic-preview bg-gray-700 border-4 border-black">
+                    <img id="profile-pic-preview-img" src="{{auth.user.profile_picture}}" class="w-full h-full object-cover" alt="Profile">
+                    <div class="edit-overlay">
+                        <label for="profile_picture" class="file-input-label bg-black bg-opacity-60 rounded-full p-2">
+                            <i class="fas fa-camera text-white"></i>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Form -->
+        <form action="{{ route('profil.update') }}" method="POST" enctype="multipart/form-data" class="mt-20 px-4 pb-6">
+            {{ csrfField() }}
+            
+            <input type="file" id="profile_picture" name="profile_picture" class="file-input" accept="image/*">
+            <input type="file" id="banner" name="banner" class="file-input" accept="image/*">
+            
+            <div class="space-y-4">
+                <!-- Name -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Name</label>
+                    <input type="text" name="firstname" value="{{ auth.user.firstname }}" 
+                      class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">
+                </div>
+
+                <!-- Bio -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Bio</label>
+                    <textarea name="bio" rows="3" 
+                              class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">{{ auth.user.bio }}</textarea>
+                </div>
+
+                <!-- Username -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Username</label>
+                    <input type="text" name="username" value="{{ auth.user.username }}" 
+                      class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">
+                </div>
+                
+                <!-- Location -->
+                <div class="mb-4">
+                    <label class="block text-sm font-medium text-gray-500 mb-1">Location</label>
+                    <input type="text" name="location" value="{{ auth.user.location }}" 
+                      class="w-full bg-black border border-gray-800 input-field rounded p-3 focus:outline-none">
+                </div>
+            </div>
+
+            <div class="mt-6">
+                <button type="submit" class="w-full bg-white text-black font-bold py-3 rounded-full hover:bg-gray-200 transition">
+                    Save changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+  function toggleProfileSettings() {
+      document.getElementById('profile-settings').classList.toggle('hidden');
+  }
+
+  // Preview image when selected
+  document.getElementById('profile_picture').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function() {
+          document.getElementById('profile-pic-preview-img').src = reader.result;
+      }
+      reader.readAsDataURL(e.target.files[0]);
+  });
+
+  document.getElementById('banner').addEventListener('change', function(e) {
+      const reader = new FileReader();
+      reader.onload = function() {
+          document.getElementById('banner-preview-img').src = reader.result;
+      }
+      reader.readAsDataURL(e.target.files[0]);
+  });
+</script>
